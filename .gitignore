@@ -209,5 +209,20 @@ sketch
 
 # End of https://www.toptal.com/developers/gitignore/api/linux,python,visualstudiocode,react
 
+# parameter file
 secret.py
 param.py
+
+# python environment directory
+schooljoon
+
+# Created by https://www.toptal.com/developers/gitignore/api/storybookjs
+# Edit at https://www.toptal.com/developers/gitignore?templates=storybookjs
+
+### StorybookJs ###
+# gitignore template for the Storybook, UI guide for front apps
+# website: https://storybook.js.org/
+
+storybook-static/
+
+# End of https://www.toptal.com/developers/gitignore/api/storybookjs
