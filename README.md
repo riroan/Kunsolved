@@ -7,3 +7,21 @@
 일단은 건국대 대상으로 처리할 예정
 
 (프로젝트명은 임시입니다.)
+
+## 기술스택
+
+### FrontEnd
+
+- React + scss
+
+- storybook
+
+### BackEnd
+
+- FastAPI
+
+- BeautifulSoup
+
+### Database
+
+- MySQL + PyMySQL
