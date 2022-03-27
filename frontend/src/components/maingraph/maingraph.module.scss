@@ -1,0 +1,32 @@
+.box {
+    width: 30%;
+    height: 350px;
+    border: 1px solid black;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.title {
+    height: 40px;
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: bold;
+    padding-top: 10px;
+}
+
+.body {
+    display: flex;
+}
+
+.left {
+    width: 70%;
+    padding-left: 60px;
+}
+
+.right {
+    width: 30%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}

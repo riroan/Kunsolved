@@ -1,10 +1,10 @@
 import React from 'react'
-import Chart from './components/chart'
+import MainGraph from './components/maingraph'
 
 function App() {
     return (
         <div>
-            <Chart />
+            <MainGraph />
         </div>
     )
 }
