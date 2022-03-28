@@ -1,10 +1,10 @@
 import React from 'react'
-import MainGraph from './components/maingraph'
+import Navigation from './components/navigation'
 
 function App() {
     return (
         <div>
-            <MainGraph />
+            <Navigation />
         </div>
     )
 }
