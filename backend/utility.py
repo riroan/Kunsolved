@@ -108,8 +108,12 @@ class Utility:
         self.db.commit()
 
     # 특정 학교 구성원이 해결한 모든 문제 반환
-    def getAllSolved(self):
-        query = "SELECT DISTINCT solve.id, problem.tier FROM solve, problem WHERE solve.id = problem.id;"
+    def getAllSolved(self, tag=""):
+        print(tag)
+        if tag=="":
+            query = "SELECT DISTINCT solve.id, problem.tier FROM solve, problem WHERE solve.id = problem.id;"
+        else:
+            query = f"SELECT DISTINCT solve.id, problem.tier FROM solve, problem, tag WHERE solve.id = problem.id AND solve.id = tag.id AND tag.name='{tag}';"
         data = self.db.executeAll(query)
         return data
 
