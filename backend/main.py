@@ -1,5 +1,5 @@
-from typing import Optional
-from fastapi import FastAPI
+from typing import Optional, List
+from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from utility import Utility
 
@@ -24,7 +24,7 @@ def read_root():
 @app.get("/byLevel")
 def byLevel():
     data = util.getCountSolvedByLevel()
-    ret = {}
+    ret = dict()
     for i, v in enumerate(data):
         ret[i] = v
     return ret
@@ -33,7 +33,31 @@ def byLevel():
 def byExp():
     data = util.getCountSolvedByLevel(1)
     exp = util.getAllExp()
-    ret = {}
+    ret = dict()
     for i, v in enumerate(zip(data, exp)):
         ret[i] = v[0]*v[1]
     return ret
+
+@app.get("/byTag")
+def byTag(tags:List[str] = Query([""]), value:str = "exp"):
+    print(tags, type(tags), value)
+    if value == "exp":
+        exp = util.getAllExp()
+        ret = dict()
+        for tag in tags:
+            print(tag)
+            problem = util.getAllSolved(tag)
+            e = 0
+            for p in problem:
+                tier = p["tier"]
+                e+=exp[tier]
+            ret[tag] = e
+        return ret
+    elif value == "cnt":
+        ret = dict()
+        tag = tags[0]
+        data = util.getAllSolved(tag)
+        ret[tag] = len(data)
+        return ret
+    else:
+        return {"detail":"Not Found"}
