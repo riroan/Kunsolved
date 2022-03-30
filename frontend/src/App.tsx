@@ -1,11 +1,14 @@
 import React from 'react'
-import Navigation from './components/navigation'
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
+import MainPage from './components/pages/MainPage'
 
 function App() {
     return (
-        <div>
-            <Navigation />
-        </div>
+        <Router>
+            <Routes>
+                <Route path="/" element={<MainPage />} />
+            </Routes>
+        </Router>
     )
 }
 
