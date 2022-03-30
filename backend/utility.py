@@ -4,6 +4,7 @@ from tqdm import tqdm
 import requests
 import time
 import json
+import asyncio
 
 class Utility:
     def __init__(self):
@@ -48,7 +49,7 @@ class Utility:
                 items = json.loads(response.text)
             except:
                 print(response.text)
-                assert 0
+                continue
             problems = items['items']
             if len(problems) == 0:
                 break
@@ -66,7 +67,7 @@ class Utility:
                         self.db.execute(query)
                 except:
                     print(query, title)
-                    assert 0
+                    continue
             ix += 1
         self.db.commit()
 
@@ -109,7 +110,6 @@ class Utility:
 
     # 특정 학교 구성원이 해결한 모든 문제 반환
     def getAllSolved(self, tag=""):
-        print(tag)
         if tag=="":
             query = "SELECT DISTINCT solve.id, problem.tier FROM solve, problem WHERE solve.id = problem.id;"
         else:

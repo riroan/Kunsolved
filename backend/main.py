@@ -2,6 +2,7 @@ from typing import Optional, List
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from utility import Utility
+import asyncio
 
 app = FastAPI()
 util = Utility()
@@ -18,11 +19,11 @@ app.add_middleware(
 )
 
 @app.get("/")
-def read_root():
+async def read_root():
     return {"Hello":"World"}
 
 @app.get("/byLevel")
-def byLevel():
+async def byLevel():
     data = util.getCountSolvedByLevel()
     ret = dict()
     for i, v in enumerate(data):
@@ -30,7 +31,7 @@ def byLevel():
     return ret
 
 @app.get("/byExp")
-def byExp():
+async def byExp():
     data = util.getCountSolvedByLevel(1)
     exp = util.getAllExp()
     ret = dict()
@@ -38,26 +39,10 @@ def byExp():
         ret[i] = v[0]*v[1]
     return ret
 
-@app.get("/byTag")
-def byTag(tags:List[str] = Query([""]), value:str = "exp"):
-    print(tags, type(tags), value)
-    if value == "exp":
-        exp = util.getAllExp()
-        ret = dict()
-        for tag in tags:
-            print(tag)
-            problem = util.getAllSolved(tag)
-            e = 0
-            for p in problem:
-                tier = p["tier"]
-                e+=exp[tier]
-            ret[tag] = e
-        return ret
-    elif value == "cnt":
-        ret = dict()
-        tag = tags[0]
-        data = util.getAllSolved(tag)
-        ret[tag] = len(data)
-        return ret
-    else:
-        return {"detail":"Not Found"}
+@app.get("/solvedByTag")
+async def solvedByTag():
+    tags = ["수학", "구현", "그리디 알고리즘", "문자열", "자료 구조", "그래프 이론", "다이나믹 프로그래밍", "기하학"]
+    ret = dict()
+    for tag in tags:
+        ret[tag] = len(util.getAllSolved(tag))
+    return ret
