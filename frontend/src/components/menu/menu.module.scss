@@ -1,0 +1,30 @@
+.main {
+    height: 50px;
+    background-color: black;
+}
+
+.list {
+    display: flex;
+    justify-content: center;
+    height: 100%;
+    // background-color: red;
+}
+
+.link{
+    width:30%;
+    text-decoration: none;
+}
+
+.li {
+    // background-color: #555;
+    line-height: 50px;
+    text-align: center;
+    font-size: 1.2em;
+    color:white;
+    // background-color: red;
+    
+}
+
+.link:hover{
+    border-bottom:medium solid white;
+}
