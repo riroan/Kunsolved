@@ -1,11 +1,11 @@
 const color = {
-    unrated: '#2d2d2d',
-    bronze: '#ad5600',
-    silver: '#435f7a',
-    gold: '#ec9a00',
-    platinum: '#27e2a4',
-    diamond: '#00b4fc',
-    ruby: '#ff0062',
+    'unrated': '#2d2d2d',
+    'bronze': '#ad5600',
+    'silver': '#435f7a',
+    'gold': '#ec9a00',
+    'platinum': '#27e2a4',
+    'diamond': '#00b4fc',
+    'ruby': '#ff0062',
 }
 
 const tier2color = (tier: number, verbose: boolean = false) => {
@@ -42,5 +42,25 @@ const tier2color = (tier: number, verbose: boolean = false) => {
     return 'unrated'
 }
 
+const getColor = (tier: string) => {
+    switch (tier) {
+        case 'unrated':
+            return color.unrated
+        case 'bronze':
+            return color.bronze
+        case 'silver':
+            return color.silver
+        case 'gold':
+            return color.gold
+        case 'platinum':
+            return color.platinum
+        case 'diamond':
+            return color.diamond
+        case 'ruby':
+            return color.ruby
+    }
+    return "undefined"
+}
+
 export default color
-export { tier2color }
+export { tier2color, getColor }

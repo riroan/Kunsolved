@@ -1,0 +1,19 @@
+.box{
+    display:flex;
+    justify-content: center;
+    padding : 10px;
+}
+
+.card {
+    width:40vw;
+    margin:5px;
+}
+
+.list{
+    margin-left:5px;
+}
+
+.list > li{
+    font-size:13px;
+    margin-top:5px;
+}

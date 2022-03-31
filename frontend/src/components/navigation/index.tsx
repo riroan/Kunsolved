@@ -1,28 +1,26 @@
-import React, { useState, useEffect, ReactElement } from 'react'
+import React, { useState, useEffect } from 'react'
 import classnames from 'classnames/bind'
 import styles from './navigation.module.scss'
-import color, { tier2color } from '../_config/color'
-import { PieChart } from 'react-minimal-pie-chart'
-import { DataEntry } from 'react-minimal-pie-chart/types/commonTypes'
+import color, { tier2color, getColor } from '../_config/color'
 import MainCard from '../maincard/index'
-import RadarChart from 'react-svg-radar-chart'
+import 'react-svg-radar-chart/build/css/index.css'
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, RadialLinearScale, PointElement, LineElement, Filler } from 'chart.js'
+import { Pie, Radar } from 'react-chartjs-2'
+
 const cx = classnames.bind(styles)
+ChartJS.register(ArcElement, Tooltip, Legend)
+ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend)
 
 export default function Navigation() {
-    const [data, setData] = useState<DataEntry[]>([])
-    const [count, setCount] = useState<ReactElement[]>([])
-    const [exp, setExp] = useState({})
-    const caption = {
-        math: '수학',
-        implementation: '구현',
-        greedy: '그리디',
-        string: '문자열',
-        data_structures: '자료구조',
-        graphs: '그래프',
-        dp: 'DP',
-        geometry: '기하학',
-    }
+    const [pieData, setPieData] = useState<number[]>([])
+    const [tagData, setTagData] = useState<number[]>([])
+    const tierLabels = ['unrated', 'bronze', 'silver', 'gold', 'platinum', 'diamond', 'ruby']
+    const tagLabels = ['수학', '구현', '그리디', '문자열', '자료구조', '그래프', 'DP', '기하학']
+    const backgroundcolor = tierLabels.map(label => getColor(label))
     const options = {
+        responsive: true,
+        maintainAspectRatio: true,
+        aspectRatio: 2,
     }
 
     useEffect(() => {
@@ -36,87 +34,62 @@ export default function Navigation() {
         })
             .then(res => res.json())
             .then(res => {
-                var sum = 0
-                var pieData = []
-                var countData = []
-                for (var d in res) {
-                    sum += res[d]
-                }
-                for (d in res) {
-                    const value = (res[d] / sum) * 100
-                    const tierColor = tier2color(parseInt(d), false)
-                    pieData.push({ title: tierColor, value: value, color: color[tierColor] })
-                    countData.push(
-                        <li style={{ display: 'flex', alignItems: 'center' }}>
-                            <div style={{ width: '10px', height: '10px', background: color[tierColor], marginRight: '5px' }}></div>
-                            {res[d]}
-                        </li>
-                    )
-                }
-                setCount(countData)
-                setData(pieData)
+                setPieData(Object.values(res))
             })
-        // url = 'http://localhost:8000/byTag?tags=수학&tags=구현&tags=문자열&tags=그리디%20알고리즘&tags=다이나믹%20프로그래밍&tags=그래프%20이론&tags=기하학&tags=자료%20구조'
-        // url = 'http://localhost:8000/byTag?tags=수학&value=cnt'
-        // fetch(url, {
-        //     method: 'GET',
-        //     headers: {
-        //         Accept: 'application/json',
-        //         'Content-Type': 'application/json',
-        //     },
-        // })
-        //     .then(res => res.json())
-        //     .then(res => {
-        //         console.log(res)
-        //     })
+        url = 'http://localhost:8000/solvedByTag'
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(res => res.json())
+            .then(res => {
+                setTagData(Object.values(res))
+            })
     }, [])
+
     return (
-        <div>
+        <div className={cx('box')}>
             <MainCard
-                title="건국대학교 티어별 해결한 문제 수"
-                leftElement={
-                    <PieChart
-                        style={{
-                            fontFamily: '"Nunito Sans", -apple-system, Helvetica, Arial, sans-serif',
-                            fontSize: '5px',
-                            width: '300px',
+                className={cx('card')}
+                title="건국대학교 티어별 해결 문제 수"
+                element={
+                    <Pie
+                        className={cx('chart')}
+                        data={{
+                            labels: tierLabels,
+                            datasets: [
+                                {
+                                    data: pieData,
+                                    backgroundColor: backgroundcolor,
+                                    borderWidth: 0,
+                                },
+                            ],
                         }}
-                        radius={PieChart.defaultProps.radius - 6}
-                        data={data}
-                        startAngle={-90}
-                        segmentsStyle={{ transition: 'stroke .3s', cursor: 'pointer' }}
-                        animate
-                        animationDuration={500}
+                        options={options}
                     />
                 }
-                rightElement={<ul>{count}</ul>}
             />
             <MainCard
-                title="건국대학교 주요 태그 분포(해결 수)"
-                leftElement={
-                    <div>
-                        <RadarChart
-                            captions={caption}
-                            data={[
-                                // data
+                className={cx('card')}
+                title="건국대학교 주요 태그별 해결 문제 수"
+                element={
+                    <Radar
+                        className={cx('chart')}
+                        data={{
+                            labels: tagLabels,
+                            datasets: [
                                 {
-                                    data: {
-                                        math: 0.95,
-                                        greedy: 0.25,
-                                        string: 0.36,
-                                        data_structures: 0.36,
-                                        geometry: 0.11,
-                                        dp: 0.39,
-                                        implementation: 1.0,
-                                        graphs: 0.45
-                                    },
-                                    meta: { color: '#58FCEC' },
+                                    label: '해결 수',
+                                    data: tagData,
+                                    backgroundColor: 'rgba(255,123,123,0.5)',
                                 },
-                            ]}
-                            size={300}
-                            options={options}
-                        />
-                    </div>
+                            ],
+                        }}
+                        options={options}
+                    />
                 }
             />
         </div>

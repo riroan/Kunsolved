@@ -4,18 +4,17 @@ import styles from './maincard.module.scss'
 const cx = classnames.bind(styles)
 
 type MainCardProps = {
+    className?:string
     title: string
-    leftElement: ReactElement
-    rightElement?: ReactElement
+    element?: ReactElement
 }
 
-export default function MainCard({ title, leftElement, rightElement }: MainCardProps) {
+export default function MainCard({ className, title, element}: MainCardProps) {
     return (
-        <div className={cx('box')}>
+        <div className={cx('box', className)}>
             <div className={cx('title')}>{title}</div>
             <div className={cx('body')}>
-                <div className={cx('left')}>{leftElement}</div>
-                <div className={cx('right')}>{rightElement}</div>
+                {element}
             </div>
         </div>
     )
