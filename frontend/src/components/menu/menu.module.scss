@@ -1,5 +1,5 @@
 .main {
-    height: 50px;
+    height: 5vh;
     background-color: black;
 }
 
@@ -7,6 +7,7 @@
     display: flex;
     justify-content: center;
     height: 100%;
+    align-items: center;
     // background-color: red;
 }
 
@@ -17,9 +18,9 @@
 
 .li {
     // background-color: #555;
-    line-height: 50px;
+    // line-height: 2vh;
     text-align: center;
-    font-size: 1.2em;
+    font-size: 2vh;
     color:white;
     // background-color: red;
     
