@@ -1,0 +1,47 @@
+.main{
+    height:10vh;
+    // background-color: orange;
+    display:flex;
+}
+
+.title{
+    font-family:"AlexBrush";
+    font-size:8vh;
+}
+
+.link{
+    text-decoration: none;
+    color:black;
+    margin-left: 20vw;
+}
+
+.link:hover{
+    color:black;
+}
+
+a{
+    text-decoration: none;
+    color:rgb(31, 31, 31);
+}
+
+a:hover{
+    color:#555;
+}
+
+.ul{
+    list-style:none;
+    margin:0;
+    padding:0;
+    text-align:center;
+    height:100%;
+    display:flex;
+    align-items: center;
+    margin-left:40vw;
+}
+
+.list{
+    font-size:1.8vh;
+    margin:0 20px;
+    padding:0;
+    border:0;
+}
