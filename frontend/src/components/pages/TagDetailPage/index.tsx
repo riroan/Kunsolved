@@ -5,15 +5,14 @@ import Menu from '../../menu'
 import ItemSet from '../../itemset'
 import styles from './TagDetailPage.module.scss'
 import classnames from 'classnames/bind'
-import level2tier from '../../_config/tier'
-import color, { tier2color } from '../../_config/color'
+import URL from '../../_config/config'
 const cx = classnames.bind(styles)
 
 export default function TagDetailPage() {
     const { name } = useParams()
     const [data, setData] = useState<ReactElement[]>([])
     useEffect(() => {
-        var url = `http://localhost:8000/unsolvedByTag?name=${name}`
+        var url = `${URL}/unsolvedByTag?name=${name}`
         fetch(url, {
             method: 'GET',
             headers: {

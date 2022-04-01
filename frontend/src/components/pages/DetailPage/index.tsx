@@ -7,13 +7,14 @@ import styles from './DetailPage.module.scss'
 import classnames from 'classnames/bind'
 import level2tier from '../../_config/tier'
 import color, { tier2color } from '../../_config/color'
+import URL from '../../_config/config'
 const cx = classnames.bind(styles)
 
 export default function DetailPage() {
     const { level } = useParams()
     const [data, setData] = useState<ReactElement[]>([])
     useEffect(() => {
-        var url = `http://localhost:8000/unsolvedByLevel?level=${level}`
+        var url = `${URL}/unsolvedByLevel?level=${level}`
         fetch(url, {
             method: 'GET',
             headers: {

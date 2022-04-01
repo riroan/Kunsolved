@@ -6,6 +6,7 @@ import MainCard from '../maincard/index'
 import 'react-svg-radar-chart/build/css/index.css'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, RadialLinearScale, PointElement, LineElement, Filler } from 'chart.js'
 import { Pie, Radar } from 'react-chartjs-2'
+import URL from '../_config/config'
 
 const cx = classnames.bind(styles)
 ChartJS.register(ArcElement, Tooltip, Legend)
@@ -24,7 +25,7 @@ export default function Navigation() {
     }
 
     useEffect(() => {
-        var url = 'http://localhost:8000/byLevel'
+        var url = `${URL}/byLevel`
         fetch(url, {
             method: 'GET',
             headers: {
@@ -36,7 +37,7 @@ export default function Navigation() {
             .then(res => {
                 setPieData(Object.values(res))
             })
-        url = 'http://localhost:8000/solvedByTag'
+        url = `${URL}/solvedByTag`
         fetch(url, {
             method: 'GET',
             headers: {
