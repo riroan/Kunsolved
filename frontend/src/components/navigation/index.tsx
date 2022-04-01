@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import classnames from 'classnames/bind'
 import styles from './navigation.module.scss'
-import color, { tier2color, getColor } from '../_config/color'
+import { getColor } from '../_config/color'
 import MainCard from '../maincard/index'
 import 'react-svg-radar-chart/build/css/index.css'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, RadialLinearScale, PointElement, LineElement, Filler } from 'chart.js'
@@ -20,7 +20,7 @@ export default function Navigation() {
     const options = {
         responsive: true,
         maintainAspectRatio: true,
-        aspectRatio: 2,
+        aspectRatio: 1.7
     }
 
     useEffect(() => {
@@ -54,7 +54,7 @@ export default function Navigation() {
         <div className={cx('box')}>
             <MainCard
                 className={cx('card')}
-                title="건국대학교 티어별 해결 문제 수"
+                title="건국대학교 레벨별 해결 문제 수"
                 element={
                     <Pie
                         className={cx('chart')}
