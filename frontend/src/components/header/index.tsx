@@ -13,10 +13,14 @@ export default function Header() {
             <div className={cx('ext')}>
                 <ul className={cx('ul')}>
                     <li className={cx('list')}>
-                        <a href="https://www.acmicpc.net/">백준</a>
+                        <a className={cx('a')} href="https://www.acmicpc.net/">
+                            백준
+                        </a>
                     </li>
                     <li className={cx('list')}>
-                        <a href="https://solved.ac/">solved</a>
+                        <a className={cx('a')} href="https://solved.ac/">
+                            solved
+                        </a>
                     </li>
                 </ul>
             </div>
