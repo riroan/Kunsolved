@@ -7,10 +7,11 @@ import json
 import asyncio
 
 class Utility:
-    def __init__(self):
+    def __init__(self, debug_mode = False):
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36'}
         self.db = Database()
+        self.debug_mode = debug_mode
 
     # 특정 유저가 해결한 문제들 반환
     def getUserInfo(self, user):  
@@ -37,6 +38,32 @@ class Utility:
             return [user.text for user in users]
         else:
             return []
+    
+    # 특정 학교 구성원이 최근에 해결한 문제 반환
+    def getRecentSolved(self, number):
+        url = f"https://www.acmicpc.net/status?school_id={number}"
+        response = requests.get(url, headers=self.headers)
+        # time.sleep(2)
+        if response.status_code==200:
+            html = response.text
+            soup = BeautifulSoup(html, 'html.parser')
+            users = soup.select('#status-table > tbody > tr > td:nth-child(2) > a')
+            users = [user.text for user in users]
+            problems = soup.select(
+                '#status-table > tbody > tr > td:nth-child(3) > a')
+            problems = [problem.text for problem in problems]
+            status = soup.select(
+                '#status-table > tbody > tr > td:nth-child(4) > span')
+            status = [st.text for st in status]
+            ret_user, ret_problem = [], []
+            for user, problem, st in zip(users, problems, status):
+                if st == "맞았습니다!!":
+                    ret_user.append(user)
+                    ret_problem.append(problem)
+            return ret_user, ret_problem
+        else:
+            return [], []
+
 
     # 존재하는 모든 문제 아이디, 제목을 db에 추가
     def getProblemInfo(self):
@@ -65,15 +92,15 @@ class Utility:
                         t = tag['displayNames'][-1]['name']
                         query = f'INSERT INTO tag (id, name) VALUES ({number}, \"{t}\");'
                         self.db.execute(query)
-                except:
-                    print(query, title)
+                except Exception:
+                    if self.debug_mode:
+                        print(f">> Warning : Problem {number} is already existed")
                     continue
             ix += 1
         self.db.commit()
 
 
     # 특정 학교에 존재하는 모든 유저 아이디 반환
-
     def getAllUser(self, number):
         ix = 1
         users = []
@@ -93,7 +120,8 @@ class Utility:
             try:
                 self.db.execute(f"INSERT INTO school (name) VALUES ('{user}');")
             except Exception:
-                pass
+                if self.debug_mode:
+                    print(f">> Warning : User {user} is already existed")
         self.db.commit()
 
     # 특정 학교에 존재하는 모든 유저의 해결한 문제 업데이트
@@ -104,6 +132,13 @@ class Utility:
         for user in tqdm(users):
             solved = self.getUserInfo(user)
             for solve in solved:
+                query = f"SELECT * FROM solve WHERE name = '{user}' AND id = '{solve}';"
+                data = self.db.executeOne(query)
+                if data:
+                    if self.debug_mode:
+                        print(
+                            f">> Warning : Problem {solve} solved by {user} is already existed")
+                    continue
                 query = f"INSERT INTO solve (name, id) VALUES ('{user}', {solve});"
                 self.db.execute(query)
         self.db.commit()
@@ -119,7 +154,7 @@ class Utility:
 
     # 특정 학교 구성원이 해결한 모든 문제를 난이도별 개수로 반환
     def getCountSolvedByLevel(self, verbose=0):
-        query = "SELECT problem.tier, COUNT(DISTINCT solve.id) cnt  FROM solve, problem WHERE solve.id = problem.id GROUP BY problem.tier ORDER BY problem.tier;"
+        query = "SELECT problem.tier, COUNT(DISTINCT solve.id) cnt FROM solve, problem WHERE solve.id = problem.id GROUP BY problem.tier ORDER BY problem.tier;"
         data = self.db.executeAll(query)
         if verbose == 0: # 브론즈, 실버, 골드...
             NUM_TIER = 7
@@ -158,20 +193,74 @@ class Utility:
         for d in data:
             ret[d['tier']] = d['exp']
         return ret
-
-# print(getCountSolvedByLevel(1))
-# print(getCountSolvedByLevel())
-# updateSchoolUser(194)
-# print(getUserInfo("riroan"))
-# getProblemInfo()
-# number = 17366
-# title = "\\\\"
-# level = 25
-# query = f'INSERT INTO problem (id, title, tier) VALUES ({number}, \"{title}\", {level});'
-
-# db.execute(query)
-# updateAllUserSolved()
+    
+    def getStatusByLevel(self):
+        query = "SELECT COUNT(p.tier) cnt, e.name, e.tier FROM problem p, experience e WHERE p.tier = e.tier GROUP BY p.tier;"
+        all_count = self.db.executeAll(query)
+        
+        query = "SELECT COUNT(distinct solve.id) cnt, problem.tier FROM solve, problem WHERE solve.id = problem.id GROUP BY problem.tier;"
+        solved_count = self.db.executeAll(query)
+        
+        data = {}
+        for d in all_count:
+            data[d['tier']] = {'name':d['name'], 'all_cnt':d['cnt'], 'solved_cnt':0}
+        for d in solved_count:
+            data[d['tier']]['solved_cnt'] = d['cnt']
+        
+        return data
+    
+    def getStatusByTag(self):
+        query = "SELECT COUNT(t.name) cnt, t.name FROM problem p, tag t WHERE p.id = t.id GROUP BY t.name ORDER BY cnt DESC;"
+        all_count = self.db.executeAll(query)
+        
+        query = "SELECT COUNT(distinct problem.id) cnt, tag.name FROM solve, problem, tag WHERE solve.id = problem.id AND problem.id = tag.id GROUP BY tag.name;"
+        solved_count = self.db.executeAll(query)
+        
+        data = {}
+        for d in all_count:
+            data[d['name']] = {'all_cnt':d['cnt'], 'solved_cnt':0}
+        for d in solved_count:
+            data[d['name']]['solved_cnt'] = d['cnt']
+        return data
+    
+    # 특정 티어 중에 해결 못한 문제들 반환
+    def getUnsolvedByLevel(self, tier):
+        query = f"SELECT DISTINCT solve.id, experience.tier FROM solve, problem, experience WHERE solve.id = problem.id AND problem.tier = experience.tier AND experience.tier = {tier};"
+        solved = self.db.executeAll(query)
+        solved = [item['id'] for item in solved]
+        query = f"SELECT * FROM problem WHERE tier={tier};"
+        all_data = self.db.executeAll(query)
+        unsolved = []
+        for d in all_data:
+            if d['id'] not in solved:
+                unsolved.append(d)
+        data = {}
+        for d in unsolved:
+            data[d['id']] = d['title']
+        return data
+    
+    # 특정 태그 중에 해결 못한 문제들 반환
+    def getUnsolvedByTag(self, name):
+        query = f'SELECT DISTINCT solve.id, tag.name FROM solve, problem, tag WHERE solve.id = problem.id AND problem.id = tag.id AND tag.name = "{name}";'
+        solved = self.db.executeAll(query)
+        solved = [item['id'] for item in solved]
+        query = f'SELECT * FROM tag, problem WHERE tag.id = problem.id AND tag.name = "{name}" ORDER BY problem.tier'
+        all_data = self.db.executeAll(query)
+        unsolved = []
+        for d in all_data:
+            if d['id'] not in solved:
+                unsolved.append(d)
+        data = {}
+        for d in unsolved:
+            data[d['id']] = {"title":d['title'], "tier":d["tier"]}
+        return data
 
 if __name__ == "__main__":
-    utility = Utility()
-    print(utility.getAllExp())
+    utility = Utility(True)
+    # print(utility.getAllExp())
+    # a,b = utility.getRecentSolved(194)
+    # print(a, b)
+    # utility.getProblemInfo()
+    # utility.updateAllUserSolved()
+    data = utility.getUnsolvedByLevel('수학')
+    print(data)
