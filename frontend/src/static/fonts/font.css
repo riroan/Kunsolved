@@ -1,0 +1,7 @@
+@font-face{
+    font-family:"AlexBrush";
+    font-display:fallback;
+    src:url("./AlexBrush-Regular.ttf") format("truetype"), url("AlexBrush-Regular.eot") format("embedded-opentype");
+    font-weight:400;
+    font-style:normal;
+}
