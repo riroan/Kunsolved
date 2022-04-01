@@ -1,0 +1,42 @@
+.main {
+    margin: 10px auto 0;
+    width: 55vw;
+    background-color: #e0e0e0;
+    padding: 0;
+    font-weight:500;
+    border-top-right-radius: 20px;
+    border-top-left-radius: 20px;
+}
+
+.ul {
+    padding: 0;
+    
+}
+
+.image{
+    width:1vw; 
+    margin-right:10px;
+}
+
+.list {
+    height: 5vh;
+    font-size: 2vh;
+    display: flex;
+    align-items: center;
+}
+
+.name {
+    width: 40%;
+    text-align: center;
+    // background-color: yellow;
+}
+
+.value {
+    width: 60%;
+    text-align: center;
+    // background-color: green;
+}
+
+.ul > .list:nth-child(2n){
+    background-color:#ffffff;
+}
