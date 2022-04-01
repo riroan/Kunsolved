@@ -13,16 +13,16 @@
 ## Demo
 
 ### 메인페이지
-<img src="./images/1.png" alt="main" width="400" />
+<img src="./images/1.png" alt="main" width="600" />
 
 ### 레벨별 미해결 문제
-<img src="./images/2.png" alt="main" width="400" />
+<img src="./images/2.png" alt="main" width="600" />
 
 ### 태그별 미해결 문제
-<img src="./images/3.png" alt="main" width="400" />
+<img src="./images/3.png" alt="main" width="600" />
 
 ### 특정 레벨 미해결 문제 리스트
-<img src="./images/4.png" alt="main" width="400" />
+<img src="./images/4.png" alt="main" width="600" />
 
 ## 기술스택
 
