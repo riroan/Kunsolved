@@ -4,7 +4,6 @@ from tqdm import tqdm
 import requests
 import time
 import json
-import asyncio
 
 class Utility:
     def __init__(self, debug_mode = False):
@@ -74,7 +73,7 @@ class Utility:
             response = requests.get(url)
             try:
                 items = json.loads(response.text)
-            except:
+            except Exception:
                 print(response.text)
                 continue
             problems = items['items']

@@ -1,8 +1,6 @@
-from typing import Optional, List
-from fastapi import FastAPI, Query
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from utility import Utility
-import asyncio
 
 app = FastAPI()
 util = Utility()
