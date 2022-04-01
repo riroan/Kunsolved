@@ -8,10 +8,10 @@ export default function Menu() {
     return (
         <div className={cx('main')}>
             <ul className={cx('list')}>
-                <Link to="/" className={cx('link')}>
-                    <li className={cx('li')}>티어별 미해결 문제</li>
+                <Link to="/tier" className={cx('link')}>
+                    <li className={cx('li')}>레벨별 미해결 문제</li>
                 </Link>
-                <Link to="/" className={cx('link')}>
+                <Link to="/tag" className={cx('link')}>
                     <li className={cx('li')}>태그별 미해결 문제</li>
                 </Link>
             </ul>
