@@ -226,3 +226,5 @@ schooljoon
 storybook-static/
 
 # End of https://www.toptal.com/developers/gitignore/api/storybookjs
+
+config.tsx
