@@ -1,0 +1,57 @@
+.list {
+    height: 5vh;
+    font-size: 2vh;
+    display: flex;
+    align-items: center;
+}
+
+.name {
+    width: 40%;
+    text-align: center;
+    // background-color: yellow;
+}
+
+.value {
+    width: 60%;
+    text-align: center;
+    // background-color: green;
+}
+
+.a:nth-child(2n) > .list{
+    background-color:#ffffff;
+}
+
+.title{
+    border-top-right-radius: 20px;
+    border-top-left-radius: 20px;
+    font-weight:700;
+    background-color:#aaaaaa;
+}
+
+.a{
+    text-decoration:none;
+    color:black;
+}
+
+.a:hover{
+    color:#555555;
+}
+
+.header{
+    width:50vw;
+    margin:20px auto;
+    font-size:2vw;
+
+}
+
+.image{
+    width:3vw;
+    margin-right:20px;
+}
+
+.all{
+    font-size:1.2vw;
+    text-align: center;
+    padding:10px;
+    font-weight:bold;
+}

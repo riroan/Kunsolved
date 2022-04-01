@@ -1,0 +1,39 @@
+.list {
+    height: 5vh;
+    font-size: 2vh;
+    display: flex;
+    align-items: center;
+}
+
+.name {
+    width: 40%;
+    text-align: center;
+    // background-color: yellow;
+}
+
+.value {
+    width: 60%;
+    text-align: center;
+    // background-color: green;
+}
+
+.list:first-child{
+    border-top-right-radius: 20px;
+    border-top-left-radius: 20px;
+    font-weight:700;
+    background-color:#aaaaaa;
+}
+
+.list:nth-child(2n){
+    background-color:#ffffff;
+}
+
+.image{
+    width:1vw; 
+    margin-right:10px;
+}
+
+.link{
+    text-decoration: none;
+    color:black;
+}
