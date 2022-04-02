@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from utility import Utility
 import schedule
 import time
+from database import Database
 
 app = FastAPI()
 util = Utility()
