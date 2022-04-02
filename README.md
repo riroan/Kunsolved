@@ -18,6 +18,8 @@
 
 (프로젝트명은 임시입니다.)
 
+## [TODO list](https://github.com/riroan/SchoolJoon/blob/main/TODO.md)
+
 ## 아키텍처 구성
 
 <img src="./images/architecture.PNG" alt="main" width="600" />
