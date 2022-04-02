@@ -42,18 +42,20 @@ class Utility:
     def getRecentSolved(self, number):
         url = f"https://www.acmicpc.net/status?school_id={number}"
         response = requests.get(url, headers=self.headers)
-        # time.sleep(2)
+        time.sleep(2)
         if response.status_code==200:
             html = response.text
             soup = BeautifulSoup(html, 'html.parser')
             users = soup.select('#status-table > tbody > tr > td:nth-child(2) > a')
+            
             users = [user.text for user in users]
+            
             problems = soup.select(
                 '#status-table > tbody > tr > td:nth-child(3) > a')
             problems = [problem.text for problem in problems]
             status = soup.select(
                 '#status-table > tbody > tr > td:nth-child(4) > span')
-            status = [st.text for st in status]
+            status = [st.text for st in status if st.text !='\xa0']
             ret_user, ret_problem = [], []
             for user, problem, st in zip(users, problems, status):
                 if st == "맞았습니다!!":
@@ -62,7 +64,17 @@ class Utility:
             return ret_user, ret_problem
         else:
             return [], []
-
+        
+    def addRecentSolved(self, number):
+        users, problems = self.getRecentSolved(number)
+        for user, problem in zip(users, problems):
+            query = f'SELECT * FROM solve WHERE id={problem} AND name="{user}"'
+            data = self.db.executeOne(query)
+            
+            try:
+                query = f'INSERT INTO solve (name, id) VALUES ("{user}", {problem});'
+            except Exception:
+                pass
 
     # 존재하는 모든 문제 아이디, 제목을 db에 추가
     def getProblemInfo(self):
@@ -261,5 +273,5 @@ if __name__ == "__main__":
     # print(a, b)
     # utility.getProblemInfo()
     # utility.updateAllUserSolved()
-    data = utility.getUnsolvedByLevel('수학')
+    data = utility.getUnsolvedByTag("수학")
     print(data)
