@@ -72,7 +72,10 @@ class Utility:
             data = self.db.executeOne(query)
             if data == None:
                 query = f'INSERT INTO solve (name, id) VALUES ("{user}", {problem});'
-                self.db.execute(query)
+                try:
+                    self.db.execute(query)
+                except Exception:
+                    pass
         self.db.commit()
 
     # 존재하는 모든 문제 아이디, 제목을 db에 추가
@@ -268,7 +271,7 @@ class Utility:
 if __name__ == "__main__":
     utility = Utility(True)
     # print(utility.getAllExp())
-    utility.addRecentSolved(194)
+    utility.getProblemInfo()
     # print(a, b)
     # utility.getProblemInfo()
     # utility.updateAllUserSolved()
