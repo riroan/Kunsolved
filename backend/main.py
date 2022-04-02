@@ -1,12 +1,23 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from utility import Utility
+import schedule
+import time
 
 app = FastAPI()
 util = Utility()
 
+def reload():
+    util.db = Database()
+
+schedule.every(1).minute.do(reload)
+
 origins = [
-    "http://localhost:3000"
+    "http://localhost:3000",
+    "https://bj.riroan.com",
+    "https://www.bj.riroan.com",
+    "http://www.bj.riroan.com",
+    "http://www.bj.riroan.com"
 ]
 app.add_middleware(
     CORSMiddleware,
