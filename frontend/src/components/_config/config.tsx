@@ -1,2 +1,2 @@
-const URL = 'http://54.180.124.60'
+const URL = 'https://api.riroan.com'
 export default URL
