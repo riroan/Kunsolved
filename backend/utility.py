@@ -70,11 +70,10 @@ class Utility:
         for user, problem in zip(users, problems):
             query = f'SELECT * FROM solve WHERE id={problem} AND name="{user}"'
             data = self.db.executeOne(query)
-            
-            try:
+            if data == None:
                 query = f'INSERT INTO solve (name, id) VALUES ("{user}", {problem});'
-            except Exception:
-                pass
+                self.db.execute(query)
+        self.db.commit()
 
     # 존재하는 모든 문제 아이디, 제목을 db에 추가
     def getProblemInfo(self):
@@ -269,9 +268,8 @@ class Utility:
 if __name__ == "__main__":
     utility = Utility(True)
     # print(utility.getAllExp())
-    # a,b = utility.getRecentSolved(194)
+    utility.addRecentSolved(194)
     # print(a, b)
     # utility.getProblemInfo()
     # utility.updateAllUserSolved()
-    data = utility.getUnsolvedByTag("수학")
-    print(data)
+    print()
