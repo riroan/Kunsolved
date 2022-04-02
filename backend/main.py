@@ -1,17 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from utility import Utility
-import schedule
-import time
-from database import Database
 
 app = FastAPI()
 util = Utility()
-
-def reload():
-    util.db = Database()
-
-schedule.every(1).minute.do(reload)
 
 origins = [
     "http://localhost:3000",
@@ -40,6 +32,7 @@ async def byLevel():
     ret = dict()
     for i, v in enumerate(data):
         ret[i] = v
+    util.db.commit()
     return ret
 
 
@@ -50,6 +43,7 @@ async def byExp():
     ret = dict()
     for i, v in enumerate(zip(data, exp)):
         ret[i] = v[0]*v[1]
+    util.db.commit()
     return ret
 
 
@@ -62,20 +56,25 @@ async def solvedByTag():
     ret = dict()
     for out, tag in zip(outs, tags):
         ret[out] = len(util.getAllSolved(tag))
+    util.db.commit()
     return ret
 
 @app.get("/statusByLevel")
 async def statusByLevel():
+    util.db.commit()
     return util.getStatusByLevel()
 
 @app.get("/statusByTag")
 async def statusByTag():
+    util.db.commit()
     return util.getStatusByTag()
 
 @app.get("/unsolvedByLevel")
 async def unsolvedByLevel(level:int):
+    util.db.commit()
     return util.getUnsolvedByLevel(level)
 
 @app.get("/unsolvedByTag")
 async def unsolvedByTag(name:str):
+    util.db.commit()
     return util.getUnsolvedByTag(name)
