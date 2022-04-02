@@ -10,6 +10,10 @@
 
 (프로젝트명은 임시입니다.)
 
+## 아키텍처 구성
+
+<img src="./images/architecture.PNG" alt="main" width="600" />
+
 ## Demo
 
 ### 메인페이지
