@@ -1,2 +1,2 @@
-const URL = 'http://54.180.124.60:8000'
+const URL = 'https://54.180.124.60'
 export default URL
