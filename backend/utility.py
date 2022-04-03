@@ -70,7 +70,7 @@ class Utility:
         for user, problem in zip(users, problems):
             query = f'SELECT * FROM solve WHERE id={problem} AND name="{user}"'
             data = self.db.executeOne(query)
-            if data == None:
+            if data is None:
                 query = f'INSERT INTO solve (name, id) VALUES ("{user}", {problem});'
                 try:
                     self.db.execute(query)
