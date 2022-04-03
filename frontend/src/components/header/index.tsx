@@ -22,11 +22,6 @@ export default function Header() {
                             solved
                         </a>
                     </li>
-                    <li className={cx('list')}>
-                        <a className={cx('a')} href="https://github.com/riroan/SchoolJoon/issues">
-                            기능요청
-                        </a>
-                    </li>
                 </ul>
             </div>
         </div>
