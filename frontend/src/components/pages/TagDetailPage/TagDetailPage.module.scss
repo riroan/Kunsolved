@@ -1,3 +1,5 @@
+@import '../../_config/config.scss';
+
 .list {
     height: 5vh;
     font-size: 2vh;
@@ -38,19 +40,39 @@
 }
 
 .header{
-    width:50vw;
-    margin:20px auto;
-    font-size:2vw;
+    @include desktop{
+        width:50vw;
+        font-size:2vw;
+        margin:20px auto;
+    }
+    @include tablet{
+        width: 80vw;
+        margin : 15px auto;
+        font-size:3vh;
+    }
+    @include mobile{
+        width: 85vw;
+        margin : 10px auto;
+        font-size:3vh;
+    }
     font-weight:700;
 }
 
 .image{
-    width:1.5vw;
+    @include desktop{
+        width:1.5vw;
+    }
+    @include tablet{
+        width:2vh;
+    }
+    @include mobile{
+        width:2vh;
+    }
     margin-right:20px;
 }
 
 .all{
-    font-size:1.2vw;
+    font-size:1.2vh;
     text-align: center;
     padding:10px;
     font-weight:bold;

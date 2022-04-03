@@ -1,21 +1,25 @@
+@import '../_config/config.scss';
+
 .main {
     margin: 10px auto 0;
-    width: 55vw;
+    @include desktop {
+        width: 55vw;
+    }
+    @include tablet {
+        width: 95vw;
+    }
+    @include mobile {
+        width: 95vw;
+    }
     background-color: #e0e0e0;
     padding: 0;
-    font-weight:500;
+    font-weight: 500;
     border-top-right-radius: 20px;
     border-top-left-radius: 20px;
 }
 
 .ul {
     padding: 0;
-    
-}
-
-.image{
-    width:1vw; 
-    margin-right:10px;
 }
 
 .list {
@@ -28,15 +32,13 @@
 .name {
     width: 40%;
     text-align: center;
-    // background-color: yellow;
 }
 
 .value {
     width: 60%;
     text-align: center;
-    // background-color: green;
 }
 
-.ul > .list:nth-child(2n){
-    background-color:#ffffff;
+.ul > .list:nth-child(2n) {
+    background-color: #ffffff;
 }

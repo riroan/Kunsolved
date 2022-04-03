@@ -1,6 +1,9 @@
+@import '../_config/config.scss';
+
 .box {
-    width: 38vw;
-    // border: 1px solid black;
+    @include desktop{
+        width: 38vw;
+    }
     display: flex;
     flex-direction: column;
 }
@@ -15,16 +18,4 @@
 
 .body {
     display: flex;
-}
-
-.left {
-    width: 70%;
-    padding-left: 60px;
-}
-
-.right {
-    width: 30%;
-    height: 100%;
-    display: flex;
-    align-items: center;
 }

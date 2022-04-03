@@ -1,3 +1,5 @@
+@import '../../_config/config.scss';
+
 .list {
     height: 5vh;
     font-size: 2vh;
@@ -29,7 +31,15 @@
 }
 
 .image{
-    width:1vw; 
+    @include desktop{
+        width:1vw; 
+    }
+    @include tablet{
+        width:2vh;
+    }
+    @include mobile{
+        width:2vh;
+    }
     margin-right:10px;
 }
 

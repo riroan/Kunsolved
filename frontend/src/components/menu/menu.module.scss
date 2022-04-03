@@ -1,6 +1,8 @@
+@import '../_config/config.scss';
+
 .main {
-    height: 5vh;
     background-color: black;
+    height: 5vh;
 }
 
 .list {
@@ -8,22 +10,25 @@
     justify-content: center;
     height: 100%;
     align-items: center;
-    // background-color: red;
 }
 
 .link{
-    width:30%;
     text-decoration: none;
+    @include desktop{
+        width:30%;
+    }
+    @include tablet{
+        width:40%;
+    }
+    @include mobile{
+        width:50%;
+    }
 }
 
 .li {
-    // background-color: #555;
-    // line-height: 2vh;
     text-align: center;
     font-size: 2vh;
     color:white;
-    // background-color: red;
-    
 }
 
 .link:hover{

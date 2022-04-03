@@ -1,12 +1,22 @@
+@import '../_config/config.scss';
+
 .box{
     display:flex;
     justify-content: center;
     padding : 10px;
+    @include tablet{
+        flex-direction:column;
+    }
+    @include mobile{
+        flex-direction:column;
+    }
 }
 
 .card {
-    width:40vw;
     margin:5px;
+    @include desktop{
+        width:40vw;
+    }
 }
 
 .list{

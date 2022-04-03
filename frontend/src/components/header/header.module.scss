@@ -1,47 +1,64 @@
-.main{
-    height:10vh;
-    // background-color: orange;
-    display:flex;
+@import '../_config/config.scss';
+
+.main {
+    height: 10vh;
+    display: flex;
 }
 
-.title{
-    font-family:"AlexBrush";
-    font-size:8vh;
+.title {
+    font-family: 'AlexBrush';
+    font-size: 8vh;
 }
 
-.link{
+.link {
     text-decoration: none;
-    color:black;
-    margin-left: 20vw;
+    color: black;
+    @include desktop {
+        margin-left: 20vw;
+    }
+    @include tablet {
+        margin: 0 auto;
+    }
+    @include mobile {
+        margin: 0 auto;
+    }
 }
 
-.link:hover{
-    color:black;
+.link:hover {
+    color: black;
 }
 
-.a{
+.a {
     text-decoration: none;
-    color:rgb(31, 31, 31);
+    color: rgb(31, 31, 31);
 }
 
-.a:hover{
-    color:#555;
+.a:hover {
+    color: #555;
 }
 
-.ul{
-    list-style:none;
-    margin:0;
-    padding:0;
-    text-align:center;
-    height:100%;
-    display:flex;
-    align-items: center;
-    margin-left:40vw;
+.ul {
+    display: flex;
+    @include desktop {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        text-align: center;
+        height: 100%;
+        align-items: center;
+        margin-left: 40vw;
+    }
+    @include tablet {
+        display:none;
+    }
+    @include mobile {
+        display:none;
+    }
 }
 
-.list{
-    font-size:1.8vh;
-    margin:0 20px;
-    padding:0;
-    border:0;
+.list {
+    font-size: 1.8vh;
+    margin: 0 20px;
+    padding: 0;
+    border: 0;
 }

@@ -1,3 +1,5 @@
+@import '../../_config/config.scss';
+
 .list {
     height: 5vh;
     font-size: 2vh;
@@ -8,6 +10,10 @@
 .name {
     width: 40%;
     text-align: center;
+    @include mobile{
+        font-size:0.8em;
+        word-break: keep-all;
+    }
     // background-color: yellow;
 }
 
