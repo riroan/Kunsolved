@@ -60,19 +60,26 @@
         text-align: center;
         margin-left: 40vw;
     }
+    @include mobile{
+        width:100%;
+    }
+    @include tablet{
+        width:100%;
+    }
 }
 
 .list {
     @include desktop{
         font-size: 1.7vh;
+        margin: 0 20px;
     }
     @include mobile{
-        width:70px;
+        width:30%;
     }
     @include tablet{
-        width:70px;
+        width:30%;
     }
-    margin: 0 20px;
+    
     padding: 0;
     border: 0;
 }
