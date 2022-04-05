@@ -1,8 +1,20 @@
 @import '../_config/config.scss';
 
 .main {
-    height: 10vh;
-    display: flex;
+    margin:0 auto;
+    @include desktop{
+        display: flex;
+        height: 10vh;
+    }
+    @include tablet{
+        width:50vw;
+        height:17vh;
+        
+    }
+    @include mobile{
+        height:17vh;
+        width:70vw;
+    }
 }
 
 .title {
@@ -55,22 +67,4 @@
     margin: 0 20px;
     padding: 0;
     border: 0;
-}
-
-.list > .ex{
-    @include tablet {
-        display:none;
-    }
-    @include mobile {
-        display:none;
-    }
-}
-
-.issue{
-    @include tablet {
-        font-size:1vh;
-    }
-    @include mobile {
-        font-size:1vh;
-    }
 }

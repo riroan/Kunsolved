@@ -23,7 +23,7 @@ export default function Header() {
                         </a>
                     </li>
                     <li className={cx('list')}>
-                        <Link to="/issue" className={cx('a', 'issue')}>
+                        <Link to="/issue" className={cx('a')}>
                             기능요청
                         </Link>
                     </li>
