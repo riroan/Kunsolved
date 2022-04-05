@@ -63,7 +63,9 @@
 }
 
 .list {
-    font-size: 1.8vh;
+    @include desktop{
+        font-size: 1.7vh;
+    }
     margin: 0 20px;
     padding: 0;
     border: 0;
