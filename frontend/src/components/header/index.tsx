@@ -13,14 +13,19 @@ export default function Header() {
             <div className={cx('ext')}>
                 <ul className={cx('ul')}>
                     <li className={cx('list')}>
-                        <a className={cx('a')} href="https://www.acmicpc.net/">
+                        <a className={cx('a', 'ex')} href="https://www.acmicpc.net/">
                             백준
                         </a>
                     </li>
                     <li className={cx('list')}>
-                        <a className={cx('a')} href="https://solved.ac/">
+                        <a className={cx('a', 'ex')} href="https://solved.ac/">
                             solved
                         </a>
+                    </li>
+                    <li className={cx('list')}>
+                        <Link to="/issue" className={cx('a', 'issue')}>
+                            기능요청
+                        </Link>
                     </li>
                 </ul>
             </div>

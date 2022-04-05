@@ -39,20 +39,14 @@
 
 .ul {
     display: flex;
-    @include desktop {
-        list-style: none;
+    align-items: center;
+    list-style: none;
+    height: 100%;
+    @include desktop{
         margin: 0;
         padding: 0;
         text-align: center;
-        height: 100%;
-        align-items: center;
         margin-left: 40vw;
-    }
-    @include tablet {
-        display:none;
-    }
-    @include mobile {
-        display:none;
     }
 }
 
@@ -61,4 +55,22 @@
     margin: 0 20px;
     padding: 0;
     border: 0;
+}
+
+.list > .ex{
+    @include tablet {
+        display:none;
+    }
+    @include mobile {
+        display:none;
+    }
+}
+
+.issue{
+    @include tablet {
+        font-size:1vh;
+    }
+    @include mobile {
+        font-size:1vh;
+    }
 }

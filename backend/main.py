@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 from utility import Utility
+import datetime
 
 app = FastAPI()
 util = Utility()
@@ -16,7 +18,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["GET"],
+    allow_methods=["GET","POST"],
     allow_headers=["*"],
 )
 
@@ -78,3 +80,12 @@ async def unsolvedByLevel(level:int):
 async def unsolvedByTag(name:str):
     util.db.commit()
     return util.getUnsolvedByTag(name)
+
+class Issue(BaseModel):
+    text: str
+
+@app.post("/issue")
+async def issue(item:Issue):
+    with open(f'issues/{str(datetime.datetime.now())}', 'w') as f:
+        f.write(item.text)
+    return {"statudCode":200}

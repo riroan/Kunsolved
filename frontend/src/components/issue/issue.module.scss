@@ -1,0 +1,48 @@
+@import '../_config/config.scss';
+
+.box{
+    margin:20px auto 0;
+    @include desktop{
+        width:55vw;
+    }
+    @include tablet{
+        width:80vw;
+    }
+    @include mobile{
+        width:90vw;
+    }
+}
+
+.title{
+    font-weight: bold;
+    @include desktop{
+        font-size: 1.5vw;
+    }
+    
+}
+
+.desc{
+    margin:10px;
+}
+
+.input{
+    width: 100%;
+    // height:50vh;
+    overflow:auto;
+}
+
+.input[type="text"]{
+    font-size:20px;
+    overflow:auto;
+}
+
+.button{
+    margin:10px;
+    background-color:"#eeeeee";
+    border:1px solid black;
+    @include desktop{
+        width: 100px;
+        height:50px;
+    }
+    font-size: 18px;
+}
