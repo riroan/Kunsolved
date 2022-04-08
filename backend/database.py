@@ -7,6 +7,9 @@ class Database:
         self.db = pymysql.connect(host=SECRET.host, user=SECRET.user,
                                   password=SECRET.password, db=SECRET.db, charset=SECRET.charset)
         self.cursor = self.db.cursor(pymysql.cursors.DictCursor)
+    
+    def __del__(self):
+        self.db.close()
 
     def execute(self, query, args={}):
         self.cursor.execute(query, args)

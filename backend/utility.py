@@ -11,9 +11,10 @@ class Utility:
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36'}
         self.db = Database()
         self.debug_mode = debug_mode
-
+    
     # 특정 유저가 해결한 문제들 반환
     def getUserInfo(self, user):  
+        self.db = Database()
         url = f"https://acmicpc.net/user/{user}"
         time.sleep(2)
         response = requests.get(url, headers=self.headers)
@@ -27,6 +28,7 @@ class Utility:
 
     # 특정 학교 구성원의 아이디 반환
     def getSchoolInfo(self, number, page=1):
+        self.db = Database()
         url = f"https://www.acmicpc.net/school/ranklist/{number}/{page}"
         response = requests.get(url, headers=self.headers)
         time.sleep(2)
@@ -40,6 +42,7 @@ class Utility:
     
     # 특정 학교 구성원이 최근에 해결한 문제 반환
     def getRecentSolved(self, number):
+        self.db = Database()
         url = f"https://www.acmicpc.net/status?school_id={number}"
         response = requests.get(url, headers=self.headers)
         time.sleep(2)
@@ -66,6 +69,7 @@ class Utility:
             return [], []
         
     def addRecentSolved(self, number):
+        self.db = Database()
         users, problems = self.getRecentSolved(number)
         for user, problem in zip(users, problems):
             query = f'SELECT * FROM solve WHERE id={problem} AND name="{user}"'
@@ -80,6 +84,7 @@ class Utility:
 
     # 존재하는 모든 문제 아이디, 제목을 db에 추가
     def getProblemInfo(self):
+        self.db = Database()
         ix = 1
         while True:
             url = f"https://solved.ac/api/v3/search/problem?query=solvable:true&page={ix}"
@@ -115,6 +120,7 @@ class Utility:
 
     # 특정 학교에 존재하는 모든 유저 아이디 반환
     def getAllUser(self, number):
+        self.db = Database()
         ix = 1
         users = []
         while True:
@@ -128,6 +134,7 @@ class Utility:
 
     # 특정 학교에 존재하는 모든 유저 아이디 db에 추가
     def updateSchoolUser(self, number):
+        self.db = Database()
         users = self.getAllUser(number)
         for user in users:
             try:
@@ -139,6 +146,7 @@ class Utility:
 
     # 특정 학교에 존재하는 모든 유저의 해결한 문제 업데이트
     def updateAllUserSolved(self):
+        self.db = Database()
         query = f"select * from school;"
         users = self.db.executeAll(query)
         users = [user["name"] for user in users]
@@ -158,6 +166,7 @@ class Utility:
 
     # 특정 학교 구성원이 해결한 모든 문제 반환
     def getAllSolved(self, tag=""):
+        self.db = Database()
         if tag=="":
             query = "SELECT DISTINCT solve.id, problem.tier FROM solve, problem WHERE solve.id = problem.id;"
         else:
@@ -167,6 +176,7 @@ class Utility:
 
     # 특정 학교 구성원이 해결한 모든 문제를 난이도별 개수로 반환
     def getCountSolvedByLevel(self, verbose=0):
+        self.db = Database()
         query = "SELECT problem.tier, COUNT(DISTINCT solve.id) cnt FROM solve, problem WHERE solve.id = problem.id GROUP BY problem.tier ORDER BY problem.tier;"
         data = self.db.executeAll(query)
         if verbose == 0: # 브론즈, 실버, 골드...
@@ -182,6 +192,7 @@ class Utility:
         return cnt
 
     def getCountAllSolvedByTag(self):
+        self.db = Database()
         query = "SELECT tag.name, COUNT(DISTINCT solve.id) cnt FROM solve, problem, tag WHERE solve.id = problem.id AND solve.id = tag.id GROUP BY tag.name;"
         data = self.db.executeAll(query)
         ret = dict()
@@ -190,6 +201,7 @@ class Utility:
         return ret
 
     def getCountSolvedByTag(self, tag):
+        self.db = Database()
         # query = f'SELECT DISTINCT solve.id, tag.name FROM solve, problem, tag WHERE solve.id = problem.id AND solve.id = tag.id AND tag.name="{tag}";'
         # data = self.db.executeAll(query)
         # return [d["id"] for d in data]
@@ -199,6 +211,7 @@ class Utility:
             return 0
     
     def getAllExp(self):
+        self.db = Database()
         query = "SELECT * FROM experience;"
         data = self.db.executeAll(query)
         NUM_TIER = 31
@@ -208,6 +221,7 @@ class Utility:
         return ret
     
     def getStatusByLevel(self):
+        self.db = Database()
         query = "SELECT COUNT(p.tier) cnt, e.name, e.tier FROM problem p, experience e WHERE p.tier = e.tier GROUP BY p.tier;"
         all_count = self.db.executeAll(query)
         
@@ -223,6 +237,7 @@ class Utility:
         return data
     
     def getStatusByTag(self):
+        self.db = Database()
         query = "SELECT COUNT(t.name) cnt, t.name FROM problem p, tag t WHERE p.id = t.id GROUP BY t.name ORDER BY cnt DESC;"
         all_count = self.db.executeAll(query)
         
@@ -238,6 +253,7 @@ class Utility:
     
     # 특정 티어 중에 해결 못한 문제들 반환
     def getUnsolvedByLevel(self, tier):
+        self.db = Database()
         query = f"SELECT DISTINCT solve.id, experience.tier FROM solve, problem, experience WHERE solve.id = problem.id AND problem.tier = experience.tier AND experience.tier = {tier};"
         solved = self.db.executeAll(query)
         solved = [item['id'] for item in solved]
@@ -254,6 +270,7 @@ class Utility:
     
     # 특정 태그 중에 해결 못한 문제들 반환
     def getUnsolvedByTag(self, name):
+        self.db = Database()
         query = f'SELECT DISTINCT solve.id, tag.name FROM solve, problem, tag WHERE solve.id = problem.id AND problem.id = tag.id AND tag.name = "{name}";'
         solved = self.db.executeAll(query)
         solved = [item['id'] for item in solved]
@@ -271,7 +288,6 @@ class Utility:
 if __name__ == "__main__":
     utility = Utility(True)
     # print(utility.getAllExp())
-    utility.getProblemInfo()
     # print(a, b)
     # utility.getProblemInfo()
     # utility.updateAllUserSolved()
