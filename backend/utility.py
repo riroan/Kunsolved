@@ -304,7 +304,7 @@ class Utility:
         query = f"SELECT name, COUNT(id) cnt FROM solve WHERE solved_at >= '{startDate}' AND solved_at <= '{endDate}' GROUP BY name;"
         data = self.db.executeAll(query)
         data.sort(key=lambda x : x['cnt'], reverse = True)
-        return data[:5]
+        return data[:10]
 
 if __name__ == "__main__":
     utility = Utility(True)

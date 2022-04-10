@@ -32,7 +32,7 @@ export default function WeeklyBest() {
             {data.map((value, i) => {
                 return (
                     <a href={`https://www.acmicpc.net/user/${value['name']}`} className={ cx('a')}>
-                        <div className={cx(i === 0 ? 'first' : i === 1 ? 'second' : 'third', 'item')}>
+                        <div className={cx(i === 0 ? 'first' : i <= 3 ? 'second' : 'third', 'item')}>
                             <AiFillTrophy className={cx('icon')} />
                             <div className={cx('rank')}>{i + 1}</div>
                             <div className={cx('name')}>{value['name']}</div>
