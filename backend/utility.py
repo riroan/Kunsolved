@@ -4,6 +4,18 @@ from tqdm import tqdm
 import requests
 import time
 import json
+import datetime
+
+def addDays(sourceDate, count):
+    targetDate = sourceDate + datetime.timedelta(days=count)
+    return targetDate
+
+def getWeekDate(sourceDate):
+    temporaryDate = datetime.datetime(sourceDate.year, sourceDate.month, sourceDate.day)
+    weekDayCount = temporaryDate.weekday()
+    startDate = addDays(temporaryDate, -weekDayCount)
+    endDate = addDays(startDate, 7)
+    return str(startDate), str(endDate)
 
 class Utility:
     def __init__(self, debug_mode = False):
@@ -284,11 +296,17 @@ class Utility:
         for d in unsolved:
             data[d['id']] = {"title":d['title'], "tier":d["tier"]}
         return data
+    
+    # 해당 날짜가 포함된 월~일 중에 가장 많이 푼 사람 5명 리턴
+    def getWeeklyBest(self):
+        self.db = Database()
+        startDate, endDate = getWeekDate(datetime.datetime.now())
+        query = f"SELECT name, COUNT(id) cnt FROM solve WHERE solved_at >= '{startDate}' AND solved_at <= '{endDate}' GROUP BY name;"
+        data = self.db.executeAll(query)
+        data.sort(key=lambda x : x['cnt'], reverse = True)
+        return data[:5]
 
 if __name__ == "__main__":
     utility = Utility(True)
-    # print(utility.getAllExp())
-    # print(a, b)
-    # utility.getProblemInfo()
-    # utility.updateAllUserSolved()
-    print()
+    data = utility.getWeeklyBest()
+    print(data)

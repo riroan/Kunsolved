@@ -1,0 +1,87 @@
+@import '../_config/config.scss';
+@import '../_config/color.scss';
+
+.main{
+    @include desktop{
+        width:70%;
+    }
+    @include tablet{
+        width:85%;
+    }
+    @include mobile{
+        width:95%;
+    }
+    margin:0 auto;
+}
+
+.title{
+    font-size:2.5vh;
+    font-weight:bold;
+}
+
+.desc{
+    padding:5px;
+}
+
+.a{
+    text-decoration: none;
+    color:black;
+    &:hover{
+        color:#4e4e4e;
+    }
+}
+
+.item{
+    border : solid 1px black;
+    margin:10px auto;
+    height:15vh;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    @include desktop{
+        font-size:4vh;
+    }
+    @include tablet{
+        font-size:3vh;
+    }
+
+    & .icon{
+        @include desktop{
+            font-size:10vh;
+        }
+        @include tablet{
+            font-size:7vh;
+        }
+        @include mobile{
+            font-size:7vw;
+        }
+    }
+    &.first .icon{
+        color:$gold;
+    }
+    &.second .icon{
+        color:$silver;
+    }
+    &.third .icon{
+        color:$bronze;
+    }
+
+    & .rank{
+        width:5%;
+        text-align: center;
+        margin-left:30px;
+    }
+    & .name{
+        width:30%;
+        text-align: center;
+    }
+    & .cnt{
+        width:30%;
+        text-align: center;
+    }
+}
+
+.other{
+    display:flex;
+    justify-content: center;
+}

@@ -81,6 +81,12 @@ async def unsolvedByTag(name:str):
     util.db.commit()
     return util.getUnsolvedByTag(name)
 
+
+@app.get("/weeklyBest")
+async def weeklyBest():
+    util.db.commit()
+    return util.getWeeklyBest()
+
 class Issue(BaseModel):
     text: str
 
@@ -89,3 +95,4 @@ async def issue(item:Issue):
     with open(f'issues/{str(datetime.datetime.now())}', 'w') as f:
         f.write(item.text)
     return {"statudCode":200}
+
