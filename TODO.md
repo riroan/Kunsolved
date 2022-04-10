@@ -1,7 +1,7 @@
 ## TODO-list
 
 - [X] AWS 배포
-- [ ] pagination
+- [X] pagination
 - [ ] CI/CD (프론트만 적용됨)
 - [ ] 문제 정렬순서
 - [X] 반응형 웹
