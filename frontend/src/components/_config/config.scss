@@ -3,6 +3,10 @@ $tablet_min: 600px;
 $tablet_max: 1023px;
 $desktop_min: 1024px;
 
+body{
+    font-family: 'Pretendard', serif;
+}
+
 @mixin mobile {
     @media (max-width: $mobile_max) {
         @content;
