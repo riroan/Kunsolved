@@ -1,0 +1,36 @@
+@import '../_config/config.scss';
+
+.main{
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    margin:30px;
+}
+
+.button{
+    border : none;
+    border-radius:8px;
+    @include desktop{
+        margin:5px;
+        font-size:1.5rem;
+    }
+    @include tablet{
+        margin:4px;
+        font-size:1.3rem;
+    }
+    @include mobile{
+        margin:2px;
+        padding:3px;
+    }
+
+    &[disabled]{
+        background:rgb(179, 179, 179);
+        cursor:revert;
+        transform:revert;
+    }
+}
+
+.current{
+    font-weight:bold;
+    border : 2px solid black;
+}
