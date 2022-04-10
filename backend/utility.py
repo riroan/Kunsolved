@@ -300,7 +300,7 @@ class Utility:
     # 해당 날짜가 포함된 월~일 중에 가장 많이 푼 사람 5명 리턴
     def getWeeklyBest(self):
         self.db = Database()
-        startDate, endDate = getWeekDate(datetime.datetime.now())
+        startDate, endDate = getWeekDate(datetime.datetime.now() - datetime.timedelta(hours=-9))
         query = f"SELECT name, COUNT(id) cnt FROM solve WHERE solved_at >= '{startDate}' AND solved_at <= '{endDate}' GROUP BY name;"
         data = self.db.executeAll(query)
         data.sort(key=lambda x : x['cnt'], reverse = True)
