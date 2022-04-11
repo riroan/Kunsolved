@@ -11,7 +11,7 @@ type ItemSetProps = {
 export default function ItemSet({ data }: ItemSetProps) {
     const title = data[0]
     const d = data.slice(1)
-    const [limit, setLimit] = useState(20)
+    const limit = 20
     const [page, setPage] = useState(1)
     const offset = (page - 1) * limit
     return (

@@ -12,8 +12,7 @@ type PaginationProps = {
 
 export default function Pagination({ total, limit, page, setPage }: PaginationProps) {
     const numPages = Math.ceil(total / limit)
-    var left = Math.max(page - 5, 1),
-        right = 10
+    var left = Math.max(page - 5, 1), right
     if (numPages <= 10) {
         left = 1
         right = numPages
