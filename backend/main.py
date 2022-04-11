@@ -87,6 +87,11 @@ async def weeklyBest():
     util.db.commit()
     return util.getWeeklyBest()
 
+@app.get("/contribBest")
+async def contribBest():
+    util.db.commit()
+    return util.getContributeBest()
+
 class Issue(BaseModel):
     text: str
 

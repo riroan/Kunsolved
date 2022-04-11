@@ -305,8 +305,16 @@ class Utility:
         data = self.db.executeAll(query)
         data.sort(key=lambda x : x['cnt'], reverse = True)
         return data[:10]
+    
+    def getContributeBest(self):
+        self.db = Database()
+        startDate, _ = getWeekDate(
+            datetime.datetime.now() - datetime.timedelta(hours=-9))
+        query = f"SELECT name, COUNT(id) cnt, solved_at FROM solve GROUP BY id HAVING solved_at>='{startDate}';"
+        data = self.db.executeAll(query)
+        return data[:10]
 
 if __name__ == "__main__":
     utility = Utility(True)
-    data = utility.getWeeklyBest()
+    data = utility.getContributeBest()
     print(data)

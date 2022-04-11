@@ -1,87 +1,106 @@
 @import '../_config/config.scss';
 @import '../_config/color.scss';
 
-.main{
-    @include desktop{
-        width:70%;
+.main {
+    @include desktop {
+        width: 70%;
     }
-    @include tablet{
-        width:85%;
+    @include tablet {
+        width: 85%;
     }
-    @include mobile{
-        width:95%;
+    @include mobile {
+        width: 95%;
     }
-    margin:0 auto;
+    margin: 0 auto;
 }
 
-.title{
-    font-size:2.5vh;
-    font-weight:bold;
+.title {
+    font-size: 2.5vh;
+    font-weight: bold;
 }
 
-.desc{
-    padding:5px;
+.desc {
+    padding: 5px;
 }
 
-.a{
+.a {
     text-decoration: none;
-    color:black;
-    &:hover{
-        color:#4e4e4e;
+    color: black;
+    &:hover {
+        color: #4e4e4e;
     }
 }
 
-.item{
-    border : solid 1px black;
-    margin:10px auto;
-    height:15vh;
-    display:flex;
+.item {
+    border: solid 1px black;
+    margin: 10px auto;
+    height: 15vh;
+    display: flex;
     align-items: center;
     justify-content: center;
-    @include desktop{
-        font-size:4vh;
+    @include desktop {
+        font-size: 4vh;
     }
-    @include tablet{
-        font-size:3vh;
-    }
-
-    & .icon{
-        @include desktop{
-            font-size:10vh;
-        }
-        @include tablet{
-            font-size:7vh;
-        }
-        @include mobile{
-            font-size:7vw;
-        }
-    }
-    &.first .icon{
-        color:$gold;
-    }
-    &.second .icon{
-        color:$silver;
-    }
-    &.third .icon{
-        color:$bronze;
+    @include tablet {
+        font-size: 3vh;
     }
 
-    & .rank{
-        width:5%;
-        text-align: center;
-        margin-left:30px;
+    & .icon {
+        @include desktop {
+            font-size: 10vh;
+        }
+        @include tablet {
+            font-size: 7vh;
+        }
+        @include mobile {
+            font-size: 7vw;
+        }
     }
-    & .name{
-        width:30%;
+    &.first .icon {
+        color: $gold;
+    }
+    &.second .icon {
+        color: $silver;
+    }
+    &.third .icon {
+        color: $bronze;
+    }
+
+    & .rank {
+        width: 5%;
+        text-align: center;
+        margin-left: 30px;
+    }
+    & .name {
+        width: 30%;
         text-align: center;
     }
-    & .cnt{
-        width:30%;
+    & .cnt {
+        width: 30%;
         text-align: center;
     }
 }
 
-.other{
+.other {
+    display: flex;
+    justify-content: center;
+}
+
+.button {
+    margin: 3px;
+    width: 48%;
+    border:none;
+    background-color:white;
+    height:50px;
+    font-size:1.5rem;
+    &.selected{
+        border-bottom:solid 3px black;
+        transition:.2s;
+    }
+}
+
+.buttonSet {
     display:flex;
     justify-content: center;
+    margin: 0 auto;
 }
