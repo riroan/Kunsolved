@@ -15,11 +15,14 @@
 }
 
 .title {
+    margin-top: 50px;
+    text-align: center;
     font-size: 2.5vh;
     font-weight: bold;
 }
 
 .desc {
+    text-align: center;
     padding: 5px;
 }
 
@@ -31,18 +34,39 @@
     }
 }
 
-.item {
-    border: solid 1px black;
-    margin: 10px auto;
-    height: 15vh;
+.rank-wrapper{
+    margin-top: 30px;
+    width:100%;
     display: flex;
-    align-items: center;
+    flex-direction: row;
+    column-gap: 10%;
     justify-content: center;
+    & .solved-rank, & .distribution-rank {
+        width:40%;
+        text-align: center;
+    }
+    & .rank-title {
+        font-weight: 900;
+        font-size: 2vh;
+        border-bottom: 1px solid gray;
+    }
+}
+
+.item {
+    border-bottom: dashed 1px gray;
+    height: 5vh;
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
     @include desktop {
-        font-size: 4vh;
+        font-size: 2.5vh;
     }
     @include tablet {
-        font-size: 3vh;
+        font-size: 2vh;
+    }
+    @include mobile {
+        font-size: 3.5vw;
     }
 
     & .icon {
@@ -56,28 +80,29 @@
             font-size: 7vw;
         }
     }
-    &.first .icon {
+    &.first .icon, &.first .rank{
         color: $gold;
     }
-    &.second .icon {
+    &.second .icon, &.second .rank{
         color: $silver;
     }
-    &.third .icon {
+    &.third .icon, &.third .rank{
         color: $bronze;
     }
 
     & .rank {
-        width: 5%;
+        width: 20%;
         text-align: center;
-        margin-left: 30px;
+        font-weight:800;
     }
     & .name {
-        width: 30%;
+        width: 60%;
         text-align: center;
     }
     & .cnt {
-        width: 30%;
+        width: 20%;
         text-align: center;
+        font-weight:800;
     }
 }
 
