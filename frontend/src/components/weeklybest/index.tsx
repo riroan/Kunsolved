@@ -60,20 +60,8 @@ export default function WeeklyBest() {
                     랭킹 기여
                 </button>
             </div>
-            {feat
-                ? contribData.map((value, i) => {
-                      return (
-                          <a href={`https://www.acmicpc.net/user/${value['name']}`} className={cx('a')} key={i}>
-                              <div className={cx(i === 0 ? 'first' : i <= 3 ? 'second' : 'third', 'item')}>
-                                  <AiFillTrophy className={cx('icon')} />
-                                  <div className={cx('rank')}>{i + 1}</div>
-                                  <div className={cx('name')}>{value['name']}</div>
-                                  <div className={cx('cnt')}>{value['cnt']} solved</div>
-                              </div>
-                          </a>
-                      )
-                  })
-                : data.map((value, i) => {
+            {(feat
+                ? contribData : data).map((value, i) => {
                       return (
                           <a href={`https://www.acmicpc.net/user/${value['name']}`} className={cx('a')} key={i}>
                               <div className={cx(i === 0 ? 'first' : i <= 3 ? 'second' : 'third', 'item')}>
