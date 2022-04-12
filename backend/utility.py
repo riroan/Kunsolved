@@ -302,17 +302,21 @@ class Utility:
         self.db = Database()
         startDate, endDate = getWeekDate(datetime.datetime.now() - datetime.timedelta(hours=-9))
         query = f"SELECT name, COUNT(id) cnt FROM solve WHERE solved_at >= '{startDate}' AND solved_at <= '{endDate}' GROUP BY name;"
-        data = self.db.executeAll(query)
+        data = self.db.executeAll(query)[:10]
         data.sort(key=lambda x : x['cnt'], reverse = True)
-        return data[:10]
+        return data
     
     def getContributeBest(self):
         self.db = Database()
         startDate, _ = getWeekDate(
             datetime.datetime.now() - datetime.timedelta(hours=-9))
-        query = f"SELECT name, COUNT(id) cnt, solved_at FROM solve GROUP BY id HAVING solved_at>='{startDate}';"
-        data = self.db.executeAll(query)
-        return data[:10]
+        query = f"SELECT sub.name name, sum(sub.cnt) cnt FROM (SELECT name, COUNT(id) cnt, solved_at FROM solve GROUP BY id HAVING solved_at>='{startDate}') sub GROUP BY sub.name;"
+        data = self.db.executeAll(query)[:10]
+        ret = []
+        for d in data:
+            d['cnt'] = int(d['cnt'])
+            ret.append(d)
+        return ret
 
 if __name__ == "__main__":
     utility = Utility(True)
