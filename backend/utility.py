@@ -316,6 +316,7 @@ class Utility:
         for d in data:
             d['cnt'] = int(d['cnt'])
             ret.append(d)
+        ret.sort(key=lambda x:x["cnt"], reverse=True)
         return ret
 
 if __name__ == "__main__":
