@@ -18,6 +18,9 @@
 
 <img src="./images/architecture.PNG" alt="main" width="600" />
 
+## 기여자
+- [donghoony](https://github.com/donghoony)
+
 ## Demo
 
 ### 메인페이지
