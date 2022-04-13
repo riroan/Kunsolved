@@ -70,10 +70,12 @@ class Utility:
             problems = [problem.text for problem in problems]
             status = soup.select(
                 '#status-table > tbody > tr > td:nth-child(4) > span')
-            status = [st.text for st in status if st.text !='\xa0']
+
+            status = [str(st) for st in status if st.text !='\xa0']
+            
             ret_user, ret_problem = [], []
             for user, problem, st in zip(users, problems, status):
-                if st == "맞았습니다!!":
+                if "result-ac" in st:
                     ret_user.append(user)
                     ret_problem.append(problem)
             return ret_user, ret_problem
@@ -319,5 +321,6 @@ class Utility:
 
 if __name__ == "__main__":
     utility = Utility(True)
-    data = utility.getWeeklyBest()
-    print(data)
+    # data = utility.getWeeklyBest()
+    utility.getAllUser(194)
+    utility.updateAllUserSolved()
