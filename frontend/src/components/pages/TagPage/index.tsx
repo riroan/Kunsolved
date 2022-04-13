@@ -25,8 +25,8 @@ export default function TagPage() {
                 var tmp = []
                 const title = [
                     <li key={-1} className={cx('list', 'title')}>
-                        <span className={cx('name')}>레벨</span>
-                        <span className={cx('value')}>해결 수 / 문제 수</span>
+                        <span className={cx('name')}>알고리즘 태그</span>
+                        <span className={cx('value')}>해결한 문제 / 전체 문제</span>
                     </li>,
                 ]
                 for (var i in res) tmp.push({ name: i, ...res[i] })

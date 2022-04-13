@@ -26,7 +26,7 @@ export default function TierPage() {
                 const title = [
                     <li key={-1} className={cx('list', 'title')}>
                         <span className={cx('name')}>레벨</span>
-                        <span className={cx('value')}>해결 수 / 문제 수</span>
+                        <span className={cx('value')}>해결한 문제 / 전체 문제</span>
                     </li>,
                 ]
                 for (var i in res) {
@@ -55,7 +55,7 @@ export default function TierPage() {
         <div>
             <Header />
             <Menu />
-            <ItemSet data={data} />
+            <ItemSet data={data} usePagination={false} />
         </div>
     )
 }

@@ -6,9 +6,10 @@ const cx = classnames.bind(styles)
 
 type ItemSetProps = {
     data: ReactElement[]
+    usePagination: boolean
 }
 
-export default function ItemSet({ data }: ItemSetProps) {
+export default function ItemSet({ data, usePagination }: ItemSetProps) {
     const title = data[0]
     const d = data.slice(1)
     const limit = 20
@@ -16,13 +17,17 @@ export default function ItemSet({ data }: ItemSetProps) {
     const offset = (page - 1) * limit
     return (
         <div className={cx('main')}>
-            <div className={ cx('item')}>
+            <div className={cx('item')}>
                 <ul className={cx('ul')}>
                     {title}
-                    {d.slice(offset, offset + limit)}
+                    {usePagination ? d.slice(offset, offset + limit) : d}
                 </ul>
             </div>
-            <Pagination total={d.length} limit={limit} page={page} setPage={setPage} />
+            {usePagination && <Pagination total={d.length} limit={limit} page={page} setPage={setPage} />}
         </div>
     )
+}
+
+ItemSet.defaultProps = {
+    usePagination: true,
 }
