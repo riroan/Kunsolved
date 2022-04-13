@@ -272,36 +272,22 @@ class Utility:
     # 특정 티어 중에 해결 못한 문제들 반환
     def getUnsolvedByLevel(self, tier):
         self.db = Database()
-        query = f"SELECT DISTINCT solve.id, experience.tier FROM solve, problem, experience WHERE solve.id = problem.id AND problem.tier = experience.tier AND experience.tier = {tier};"
-        solved = self.db.executeAll(query)
-        solved = [item['id'] for item in solved]
-        query = f"SELECT * FROM problem WHERE tier={tier};"
-        all_data = self.db.executeAll(query)
-        unsolved = []
-        for d in all_data:
-            if d['id'] not in solved:
-                unsolved.append(d)
-        data = {}
-        for d in unsolved:
-            data[d['id']] = d['title']
-        return data
+        query = f"SELECT * FROM problem WHERE is_solved = false AND tier={tier};"
+        data = self.db.executeAll(query)
+        ret = {}
+        for d in data:
+            ret[d["id"]] = d["title"]
+        return ret
     
     # 특정 태그 중에 해결 못한 문제들 반환
     def getUnsolvedByTag(self, name):
         self.db = Database()
-        query = f'SELECT DISTINCT solve.id, tag.name FROM solve, problem, tag WHERE solve.id = problem.id AND problem.id = tag.id AND tag.name = "{name}";'
-        solved = self.db.executeAll(query)
-        solved = [item['id'] for item in solved]
-        query = f'SELECT * FROM tag, problem WHERE tag.id = problem.id AND tag.name = "{name}" ORDER BY problem.tier'
-        all_data = self.db.executeAll(query)
-        unsolved = []
-        for d in all_data:
-            if d['id'] not in solved:
-                unsolved.append(d)
-        data = {}
-        for d in unsolved:
-            data[d['id']] = {"title":d['title'], "tier":d["tier"]}
-        return data
+        query = f"SELECT * FROM problem, tag WHERE problem.id = tag.id AND problem.is_solved = false AND tag.name='{name}';"
+        data = self.db.executeAll(query)
+        ret = {}
+        for d in data:
+            ret[d['id']] = {"title": d['title'], "tier": d["tier"]}
+        return ret
     
     # 해당 날짜가 포함된 월~일 중에 가장 많이 푼 사람 5명 리턴
     def getWeeklyBest(self):
@@ -327,4 +313,4 @@ if __name__ == "__main__":
     utility = Utility(True)
     # data = utility.getWeeklyBest()
     # utility.getAllUser(194)
-    utility.updateAllUserSolved()
+    utility.getUnsolvedByLevel(12)
