@@ -89,8 +89,10 @@ class Utility:
             query = f'SELECT * FROM solve WHERE id={problem} AND name="{user}"'
             data = self.db.executeOne(query)
             if data is None:
-                query = f'INSERT INTO solve (name, id) VALUES ("{user}", {problem});'
                 try:
+                    query = f'INSERT INTO solve (name, id) VALUES ("{user}", {problem});'
+                    self.db.execute(query)
+                    query = f'UPDATE problem SET is_solved=true WHERE id={problem};'
                     self.db.execute(query)
                 except Exception:
                     pass
@@ -249,7 +251,6 @@ class Utility:
             data[d['tier']] = {'name':d['name'], 'all_cnt':d['cnt'], 'solved_cnt':0}
         for d in solved_count:
             data[d['tier']]['solved_cnt'] = d['cnt']
-        
         return data
     
     def getStatusByTag(self):
@@ -257,7 +258,8 @@ class Utility:
         query = "SELECT COUNT(t.name) cnt, t.name FROM problem p, tag t WHERE p.id = t.id GROUP BY t.name ORDER BY cnt DESC;"
         all_count = self.db.executeAll(query)
         
-        query = "SELECT COUNT(distinct problem.id) cnt, tag.name FROM solve, problem, tag WHERE solve.id = problem.id AND problem.id = tag.id GROUP BY tag.name;"
+        # query = "SELECT COUNT(distinct problem.id) cnt, tag.name FROM solve, problem, tag WHERE solve.id = problem.id AND problem.id = tag.id GROUP BY tag.name;"
+        query = "SELECT COUNT(distinct t.id) cnt, t.name FROM tag t, (SELECT id FROM solve GROUP BY id) p WHERE p.id = t.id GROUP BY t.name;"
         solved_count = self.db.executeAll(query)
         
         data = {}
