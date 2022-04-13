@@ -167,16 +167,18 @@ class Utility:
         for user in tqdm(users):
             solved = self.getUserInfo(user)
             for solve in solved:
-                query = f"SELECT * FROM solve WHERE name = '{user}' AND id = '{solve}';"
+                query = f"SELECT * FROM solve WHERE name = '{user}' AND id = {solve};"
                 data = self.db.executeOne(query)
                 if data:
                     if self.debug_mode:
                         print(
                             f">> Warning : Problem {solve} solved by {user} is already existed")
                     continue
-                query = f"INSERT INTO solve (name, id) VALUES ('{user}', {solve});"
+                query = f"INSERT INTO solve (name, id, solved_at) VALUES ('{user}', {solve}, '2020-04-08 04:32:01');"
                 self.db.execute(query)
-        self.db.commit()
+                if self.debug_mode:
+                    print(f">> Log : Problem {solve} solved by {user} is appended")
+            self.db.commit()
 
     # 특정 학교 구성원이 해결한 모든 문제 반환
     def getAllSolved(self, tag=""):
@@ -322,5 +324,5 @@ class Utility:
 if __name__ == "__main__":
     utility = Utility(True)
     # data = utility.getWeeklyBest()
-    utility.getAllUser(194)
+    # utility.getAllUser(194)
     utility.updateAllUserSolved()
