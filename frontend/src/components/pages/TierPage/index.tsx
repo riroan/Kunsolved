@@ -1,7 +1,6 @@
-import React, { useEffect, useState, ReactElement } from 'react'
+import React, { useEffect, useState } from 'react'
 import Menu from '../../menu'
 import Header from '../../header'
-import ItemSet from '../../itemset'
 import styles from './TierPage.module.scss'
 import classnames from 'classnames/bind'
 import { Link } from 'react-router-dom'
@@ -10,7 +9,14 @@ import URL from '../../_config/config'
 const cx = classnames.bind(styles)
 
 export default function TierPage() {
-    const [data, setData] = useState<ReactElement[]>([])
+    const [tierTable, setTierTable] = useState<Array<Array<Tier>>>([])
+    interface Tier{
+        level: number,
+        solved_cnt: number,
+        all_cnt: number
+        name: string
+    }
+
     useEffect(() => {
         var url = `${URL}/statusByLevel`
         fetch(url, {
@@ -22,40 +28,44 @@ export default function TierPage() {
         })
             .then(res => res.json())
             .then(res => {
-                var tmp = []
-                const title = [
-                    <li key={-1} className={cx('list', 'title')}>
-                        <span className={cx('name')}>레벨</span>
-                        <span className={cx('value')}>해결한 문제 / 전체 문제</span>
-                    </li>,
-                ]
-                for (var i in res) {
-                    tmp.push({ level: parseInt(i), ...res[i] })
+                var table = []
+                for(var tier = 0; tier < 6; tier++) {
+                    var tmp: Array<Tier> = []
+                    for (var tierDetail = 1; tierDetail <= 5; tierDetail++) {
+                        tmp.push({level: tier * 5 + tierDetail, ...res[tier * 5 + tierDetail]});
+                    }
+                    table.push(tmp);
                 }
-                setData(
-                    title.concat(
-                        tmp.map((value, ix) => (
-                            <li key={ix} className={cx('list')}>
-                                <span className={cx('name')}>
-                                    <img className={cx('image')} src={`https://static.solved.ac/tier_small/${value.level}.svg`} alt={value.name} />
-                                    <Link to={`/tier/${value.level}`} className={cx('link')} style={{ color: color[tier2color(value.level, true)] }}>
-                                        {value.name}
-                                    </Link>
-                                </span>
-                                <span className={cx('value')}>
-                                    {value.solved_cnt} / {value.all_cnt}
-                                </span>
-                            </li>
-                        ))
-                    )
-                )
+                table.push([{level: 0, ...res[0]}]);
+                setTierTable(table);
             })
+
     }, [])
     return (
         <div>
             <Header />
             <Menu />
-            <ItemSet data={data} />
+            <div className={cx('tier-wrapper')}>
+                {
+                    tierTable.map((row, ix) =>(
+                        <div className={cx('tier-row')}>
+                            {
+                                row.map((tier, ixx) =>(
+                                    <div className={cx('tier-level')}>
+                                        <Link to={`/tier/${tier.level}`} className={cx('link')} style={{ color: color[tier2color(tier.level, true)] }} >
+                                            <img className={cx('image')} src={`https://static.solved.ac/tier_small/${tier.level}.svg`} alt={tier.name} />
+
+                                        </Link>
+                                        <div className={cx('tier-details')} style={{ color: color[tier2color(tier.level, true)] }}>
+                                            {tier.solved_cnt} / {tier.all_cnt}
+                                        </div>
+                                    </div>
+                                ))
+                            }
+                        </div>
+                    ))
+                }
+            </div>
         </div>
     )
 }
