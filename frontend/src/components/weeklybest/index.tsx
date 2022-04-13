@@ -32,7 +32,6 @@ export default function WeeklyBest() {
             .then(res => res.json())
             .then(res => {
                 setContribData(res)
-                console.log(res)
             })
     }, [])
 
