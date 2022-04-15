@@ -178,6 +178,8 @@ class Utility:
                     continue
                 query = f"INSERT INTO solve (name, id, solved_at) VALUES ('{user}', {solve}, '2020-04-08 04:32:01');"
                 self.db.execute(query)
+                query = f"UPDATE problem SET is_solved=true WHERE id={solve};"
+                self.db.execute(query)
                 if self.debug_mode:
                     print(f">> Log : Problem {solve} solved by {user} is appended")
             self.db.commit()
