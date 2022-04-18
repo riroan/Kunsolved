@@ -25,7 +25,7 @@ export default function Navigation() {
     }
 
     useEffect(() => {
-        var url = `${URL}/byLevel`
+        var url = `${URL}/v1/level`
         fetch(url, {
             method: 'GET',
             headers: {
@@ -37,7 +37,7 @@ export default function Navigation() {
             .then(res => {
                 setPieData(Object.values(res))
             })
-        url = `${URL}/solvedByTag`
+        url = `${URL}/v1/tag`
         fetch(url, {
             method: 'GET',
             headers: {

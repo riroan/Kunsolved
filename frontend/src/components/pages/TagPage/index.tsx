@@ -12,7 +12,7 @@ const cx = classnames.bind(styles)
 export default function TagPage() {
     const [data, setData] = useState<ReactElement[]>([])
     useEffect(() => {
-        var url = `${URL}/statusByTag`
+        var url = `${URL}/v1/status/tag`
         fetch(url, {
             method: 'GET',
             headers: {

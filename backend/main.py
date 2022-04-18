@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from utility import Utility
@@ -28,7 +28,7 @@ app.add_middleware(
 #     return {"Hello": "World"}
 
 
-@app.get("/byLevel")
+@app.get("/v1/level")
 async def byLevel():
     data = util.getCountSolvedByLevel()
     ret = dict()
@@ -38,7 +38,7 @@ async def byLevel():
     return ret
 
 
-@app.get("/byExp")
+@app.get("/v1/exp")
 async def byExp():
     data = util.getCountSolvedByLevel(1)
     exp = util.getAllExp()
@@ -49,7 +49,7 @@ async def byExp():
     return ret
 
 
-@app.get("/solvedByTag")
+@app.get("/v1/tag")
 async def solvedByTag():
     d = {"수학": "math", "구현": "implementation", "그리디 알고리즘": "greedy", "문자열": "string", "자료 구조": "data_structures",
          "그래프 이론": "graphs", "다이나믹 프로그래밍": "dp", "기하학": "geometry"}
@@ -65,37 +65,37 @@ async def solvedByTag():
     return ret
 
 
-@app.get("/statusByLevel")
+@app.get("/v1/status/level")
 async def statusByLevel():
     util.db.commit()
     return util.getStatusByLevel()
 
 
-@app.get("/statusByTag")
+@app.get("/v1/status/tag")
 async def statusByTag():
     util.db.commit()
     return util.getStatusByTag()
 
 
-@app.get("/unsolvedByLevel")
+@app.get("/v1/unsolved/level")
 async def unsolvedByLevel(level: int):
     util.db.commit()
     return util.getUnsolvedByLevel(level)
 
 
-@app.get("/unsolvedByTag")
+@app.get("/v1/unsolved/tag")
 async def unsolvedByTag(name: str):
     util.db.commit()
     return util.getUnsolvedByTag(name)
 
 
-@app.get("/weeklyBest")
+@app.get("/v1/best/week")
 async def weeklyBest():
     util.db.commit()
     return util.getWeeklyBest()
 
 
-@app.get("/contribBest")
+@app.get("/v1/best/contrib")
 async def contribBest():
     util.db.commit()
     return util.getContributeBest()
@@ -105,7 +105,7 @@ class Issue(BaseModel):
     text: str
 
 
-@app.post("/issue")
+@app.post("/v1/issue", status_code=status.HTTP_201_CREATED)
 async def issue(item: Issue):
     with open(f'issues/{str(datetime.datetime.now())}', 'w') as f:
         f.write(item.text)

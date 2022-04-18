@@ -12,7 +12,7 @@ const cx = classnames.bind(styles)
 export default function TierPage() {
     const [data, setData] = useState<ReactElement[]>([])
     useEffect(() => {
-        var url = `${URL}/statusByLevel`
+        var url = `${URL}/v1/status/level`
         fetch(url, {
             method: 'GET',
             headers: {

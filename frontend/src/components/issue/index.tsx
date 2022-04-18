@@ -10,7 +10,7 @@ export default function Issue() {
         setText(e.currentTarget.value)
     }
     const submit = () => {
-        var url = `${URL}/issue`
+        var url = `${URL}/v1/issue`
         const body = { text: text }
         fetch(url, {
             method: 'POST',

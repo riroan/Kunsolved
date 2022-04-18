@@ -9,7 +9,7 @@ export default function WeeklyBest() {
     const [contribData, setContribData] = useState([])
 
     useEffect(() => {
-        var url = `${URL}/weeklyBest`
+        var url = `${URL}/v1/best/week`
         fetch(url, {
             method: 'GET',
             headers: {
@@ -21,7 +21,7 @@ export default function WeeklyBest() {
             .then(res => {
                 setData(res)
             })
-        url = `${URL}/contribBest`
+        url = `${URL}/v1/best/contrib`
         fetch(url, {
             method: 'GET',
             headers: {

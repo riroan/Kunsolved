@@ -42,7 +42,7 @@ export default function TagDetailPage() {
         }
     }
     useEffect(() => {
-        var url = `${URL}/unsolvedByTag?name=${name}`
+        var url = `${URL}/v1/unsolved/tag?name=${name}`
         fetch(url, {
             method: 'GET',
             headers: {

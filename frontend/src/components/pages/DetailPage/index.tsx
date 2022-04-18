@@ -41,7 +41,7 @@ export default function DetailPage() {
         }
     }
     useEffect(() => {
-        var url = `${URL}/unsolvedByLevel?level=${level}`
+        var url = `${URL}/v1/unsolved/level?level=${level}`
         fetch(url, {
             method: 'GET',
             headers: {
