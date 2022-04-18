@@ -9,7 +9,6 @@
     @include tablet{
         width:50vw;
         height:17vh;
-        
     }
     @include mobile{
         height:17vh;
@@ -29,10 +28,12 @@
         margin-left: 20vw;
     }
     @include tablet {
-        margin: 0 auto;
+        display:block;
+        text-align:center;
     }
     @include mobile {
-        margin: 0 auto;
+        text-align:center;
+        display:block;
     }
 }
 
@@ -69,6 +70,7 @@
 }
 
 .list {
+    text-align : center;
     @include desktop{
         font-size: 1.7vh;
         margin: 0 20px;
