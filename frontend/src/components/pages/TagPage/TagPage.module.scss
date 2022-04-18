@@ -11,16 +11,13 @@
     width: 40%;
     text-align: center;
     @include mobile{
-        font-size:0.8em;
         word-break: keep-all;
     }
-    // background-color: yellow;
 }
 
 .value {
     width: 60%;
     text-align: center;
-    // background-color: green;
 }
 
 .list:first-child{
