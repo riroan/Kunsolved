@@ -1,3 +1,2 @@
-// const URL = 'https://api.riroan.com'
-const URL = 'http://localhost:8000'
+const URL = 'https://api.riroan.com'
 export default URL
