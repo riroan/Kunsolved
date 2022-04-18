@@ -1,0 +1,41 @@
+@import '../_config/config.scss';
+
+.main {
+    margin: 10px auto 0;
+    @include desktop {
+        width: 55vw;
+    }
+    @include tablet {
+        width: 95vw;
+    }
+    @include mobile {
+        width: 95vw;
+    }
+    display: flex;
+}
+
+.title {
+    width: 10%;
+    margin: 10px;
+    text-align: center;
+    font-size: 1.3rem;
+    vertical-align: middle;
+    height:40px;
+    line-height:40px;
+    font-weight:bold;
+}
+
+button {
+    width: 15%;
+    margin: 10px;
+    text-align: center;
+    font-size: 1.2rem;
+    border-style:none;
+    height:40px;
+    background-color: white;
+    border-radius:20px;
+}
+
+.selected{
+    background-color:#bbbbbb;
+}

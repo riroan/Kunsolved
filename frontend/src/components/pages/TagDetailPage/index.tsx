@@ -6,11 +6,41 @@ import ItemSet from '../../itemset'
 import styles from './TagDetailPage.module.scss'
 import classnames from 'classnames/bind'
 import URL from '../../_config/config'
+import { problemType } from '../../_config/types'
+import Sort, { SortType } from '../../sort'
 const cx = classnames.bind(styles)
 
 export default function TagDetailPage() {
     const { name } = useParams()
-    const [data, setData] = useState<ReactElement[]>([])
+    const [data, setData] = useState<problemType[]>([])
+    const [elements, setElements] = useState<ReactElement[]>([])
+    const updateElement = () => {
+        const title = [
+            <li key={-1} className={cx('list', 'title')}>
+                <span className={cx('name')}>문제 번호</span>
+                <span className={cx('value')}>문제</span>
+            </li>,
+        ]
+        if (data.length > 0) {
+            setElements(
+                title.concat(
+                    data.map((value: problemType, ix: number) => (
+                        <a key={ix} href={`https://www.acmicpc.net/problem/${value.id}`} className={cx('a')}>
+                            <li className={cx('list')}>
+                                <span className={cx('name')}>
+                                    <img className={cx('image')} src={`https://static.solved.ac/tier_small/${value.tier}.svg`} alt={value.title} />
+                                    <div className={ cx('id')}>{value.id}</div>
+                                </span>
+                                <span className={cx('value')}>{value.title}</span>
+                            </li>
+                        </a>
+                    ))
+                )
+            )
+        } else {
+            setElements(title.concat(<li className={cx('all')}>안 푼 문제가 없습니다!</li>))
+        }
+    }
     useEffect(() => {
         var url = `${URL}/unsolvedByTag?name=${name}`
         fetch(url, {
@@ -22,43 +52,56 @@ export default function TagDetailPage() {
         })
             .then(res => res.json())
             .then(res => {
-                var tmp = []
-                const title = [
-                    <li key={-1} className={cx('list', 'title')}>
-                        <span className={cx('name')}>문제 번호</span>
-                        <span className={cx('value')}>문제</span>
-                    </li>,
-                ]
-                for (var i in res) {
-                    tmp.push({ id: i, ...res[i] })
-                }
-                if (tmp.length > 0) {
-                    setData(
-                        title.concat(
-                            tmp.map((value, ix) => (
-                                <a key={ix} href={`https://www.acmicpc.net/problem/${value.id}`} className={cx('a')}>
-                                    <li className={cx('list')}>
-                                        <span className={cx('name')}>
-                                            <img className={cx('image')} src={`https://static.solved.ac/tier_small/${value.tier}.svg`} alt={value.name} />
-                                            {value.id}
-                                        </span>
-                                        <span className={cx('value')}>{value.title}</span>
-                                    </li>
-                                </a>
-                            ))
-                        )
-                    )
-                } else { 
-                    setData(title.concat(<li className={cx('all')}>안 푼 문제가 없습니다!</li>))
-                }
+                setData(res)
             })
-    }, [])
+    }, [name])
+    useEffect(() => {
+        updateElement()
+    }, [data])
     return (
         <div>
             <Header />
             <Menu />
-            <div className={cx('header')}>{name}</div>
-            <ItemSet data={data} />
+            <div className={cx('header', 'common')}>{name}</div>
+            <Sort
+                sortFunction={(flag, type) => {
+                    if (type === SortType.RANDOM) {
+                        setData(data.sort(() => Math.random() - 0.5))
+                    } else if (flag) {
+                        setData(data.reverse())
+                    } else {
+                        let cmp
+                        switch (type) {
+                            case SortType.ID:
+                                cmp = (a: problemType, b: problemType) => {
+                                    if (a.id > b.id) return 1
+                                    else if (a.id < b.id) return -1
+                                    return 0
+                                }
+                                break
+                            case SortType.LEVEL:
+                                cmp = (a: problemType, b: problemType) => {
+                                    if (a.tier > b.tier) return 1
+                                    else if (a.tier < b.tier) return -1
+                                    if (a.id > b.id) return 1
+                                    else if (a.id < b.id) return -1
+                                    return 0
+                                }
+                                break
+                            case SortType.TITLE:
+                                cmp = (a: problemType, b: problemType) => {
+                                    if (a.title > b.title) return 1
+                                    else if (a.title < b.title) return -1
+                                    return 0
+                                }
+                                break
+                        }
+                        setData(data.sort(cmp))
+                    }
+                    updateElement()
+                }}
+            />
+            <ItemSet data={elements} />
         </div>
     )
 }

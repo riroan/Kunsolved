@@ -10,6 +10,8 @@
 .name {
     width: 40%;
     text-align: center;
+    display:flex;
+    justify-content: center;
     // background-color: yellow;
 }
 
@@ -19,61 +21,74 @@
     // background-color: green;
 }
 
-.a:nth-child(2n) > .list{
-    background-color:#ffffff;
+.a:nth-child(2n) > .list {
+    background-color: #ffffff;
 }
 
-.title{
+.title {
     border-top-right-radius: 20px;
     border-top-left-radius: 20px;
-    font-weight:700;
-    background-color:#aaaaaa;
+    font-weight: 700;
+    background-color: #aaaaaa;
 }
 
-.a{
-    text-decoration:none;
-    color:black;
+.a {
+    text-decoration: none;
+    color: black;
 }
 
-.a:hover{
-    color:#555555;
+.a:hover {
+    color: #555555;
 }
 
-.header{
-    @include desktop{
-        width:50vw;
-        font-size:2vw;
-        margin:20px auto;
+.common {
+    @include desktop {
+        width: 50vw;
+        margin: 20px auto;
     }
-    @include tablet{
+    @include tablet {
         width: 80vw;
-        margin : 15px auto;
-        font-size:3vh;
+        margin: 15px auto;
     }
-    @include mobile{
+    @include mobile {
         width: 85vw;
-        margin : 10px auto;
-        font-size:3vh;
+        margin: 10px auto;
     }
-    font-weight:700;
 }
 
-.image{
-    @include desktop{
-        width:1.5vw;
+.header {
+    @include desktop {
+        font-size: 2vw;
     }
-    @include tablet{
-        width:2vh;
+    @include tablet {
+        font-size: 3vh;
     }
-    @include mobile{
-        width:2vh;
+    @include mobile {
+        font-size: 3vh;
     }
-    margin-right:20px;
+    font-weight: 700;
 }
 
-.all{
-    font-size:1.2vh;
+.image {
+    @include desktop {
+        width: 1.5vw;
+    }
+    @include tablet {
+        width: 2vh;
+    }
+    @include mobile {
+        width: 2vh;
+    }
+    margin-right: 20px;
+}
+
+.all {
+    font-size: 1.2vh;
     text-align: center;
-    padding:10px;
-    font-weight:bold;
+    padding: 10px;
+    font-weight: bold;
+}
+
+.id{
+    width:50px;
 }

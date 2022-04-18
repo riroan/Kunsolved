@@ -276,9 +276,9 @@ class Utility:
         self.db = Database()
         query = f"SELECT * FROM problem WHERE is_solved = false AND tier={tier};"
         data = self.db.executeAll(query)
-        ret = {}
+        ret = []
         for d in data:
-            ret[d["id"]] = d["title"]
+            ret.append({"id": d["id"], "title": d['title'], "tier": d["tier"]})
         return ret
     
     # 특정 태그 중에 해결 못한 문제들 반환
@@ -286,9 +286,9 @@ class Utility:
         self.db = Database()
         query = f"SELECT * FROM problem, tag WHERE problem.id = tag.id AND problem.is_solved = false AND tag.name='{name}';"
         data = self.db.executeAll(query)
-        ret = {}
+        ret = []
         for d in data:
-            ret[d['id']] = {"title": d['title'], "tier": d["tier"]}
+            ret.append({"id":d["id"],"title": d['title'], "tier": d["tier"]})
         return ret
     
     # 해당 날짜가 포함된 월~일 중에 가장 많이 푼 사람 5명 리턴
