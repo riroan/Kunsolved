@@ -188,9 +188,9 @@ class Utility:
     def getAllSolved(self, tag=""):
         self.db = Database()
         if tag=="":
-            query = "SELECT DISTINCT solve.id, problem.tier FROM solve, problem WHERE solve.id = problem.id;"
+            query = "SELECT problem.id, problem.tier, tag.name FROM problem, tag WHERE problem.id=tag.id AND problem.is_solved = true;"
         else:
-            query = f"SELECT DISTINCT solve.id, problem.tier FROM solve, problem, tag WHERE solve.id = problem.id AND solve.id = tag.id AND tag.name='{tag}';"
+            query = f"SELECT problem.id, problem.tier FROM problem, tag WHERE problem.id = tag.id AND problem.is_solved=true AND tag.name='{tag}';"
         data = self.db.executeAll(query)
         return data
 
