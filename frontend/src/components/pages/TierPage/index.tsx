@@ -6,13 +6,12 @@ import styles from './TierPage.module.scss'
 import classnames from 'classnames/bind'
 import { Link } from 'react-router-dom'
 import color, { tier2color } from '../../_config/color'
-import URL from '../../_config/config'
 const cx = classnames.bind(styles)
 
 export default function TierPage() {
     const [data, setData] = useState<ReactElement[]>([])
     useEffect(() => {
-        var url = `${URL}/v1/status/level`
+        var url = '/v1/status/level'
         fetch(url, {
             method: 'GET',
             headers: {

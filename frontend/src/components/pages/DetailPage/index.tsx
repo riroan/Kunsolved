@@ -7,7 +7,6 @@ import styles from './DetailPage.module.scss'
 import classnames from 'classnames/bind'
 import level2tier from '../../_config/tier'
 import color, { tier2color } from '../../_config/color'
-import URL from '../../_config/config'
 import { problemType } from '../../_config/types'
 import Sort, { SortType } from '../../sort'
 const cx = classnames.bind(styles)
@@ -41,7 +40,7 @@ export default function DetailPage() {
         }
     }
     useEffect(() => {
-        var url = `${URL}/v1/unsolved/level?level=${level}`
+        var url = `/v1/unsolved/level?level=${level}`
         fetch(url, {
             method: 'GET',
             headers: {
