@@ -7,6 +7,7 @@ import styles from './TagDetailPage.module.scss'
 import classnames from 'classnames/bind'
 import { problemType } from '../../_config/types'
 import Sort, { SortType } from '../../sort'
+import URL from '../../_config/config'
 const cx = classnames.bind(styles)
 
 export default function TagDetailPage() {
@@ -41,7 +42,7 @@ export default function TagDetailPage() {
         }
     }
     useEffect(() => {
-        var url = `/v1/unsolved/tag?name=${name}`
+        var url = `${URL}/v1/unsolved/tag?name=${name}`
         fetch(url, {
             method: 'GET',
             headers: {

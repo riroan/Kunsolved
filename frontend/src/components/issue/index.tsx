@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import classnames from 'classnames/bind'
 import styles from './issue.module.scss'
+import URL from '../_config/config'
 const cx = classnames.bind(styles)
 
 export default function Issue() {
@@ -9,7 +10,7 @@ export default function Issue() {
         setText(e.currentTarget.value)
     }
     const submit = () => {
-        var url = '/v1/issue'
+        var url = `${URL}/v1/issue`
         const body = { text: text }
         fetch(url, {
             method: 'POST',

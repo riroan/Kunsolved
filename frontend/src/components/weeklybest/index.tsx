@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import classnames from 'classnames/bind'
 import styles from './weeklybest.module.scss'
+import URL from '../_config/config'
 const cx = classnames.bind(styles)
 
 export default function WeeklyBest() {
@@ -8,7 +9,7 @@ export default function WeeklyBest() {
     const [contribData, setContribData] = useState([])
 
     useEffect(() => {
-        var url = '/v1/best/week'
+        var url = `${URL}/v1/best/week`
         fetch(url, {
             method: 'GET',
             headers: {
@@ -20,7 +21,7 @@ export default function WeeklyBest() {
             .then(res => {
                 setData(res)
             })
-        url = '/v1/best/contrib'
+        url = `${URL}/v1/best/contrib`
         fetch(url, {
             method: 'GET',
             headers: {

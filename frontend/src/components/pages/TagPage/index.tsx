@@ -6,12 +6,13 @@ import styles from './TagPage.module.scss'
 import classnames from 'classnames/bind'
 import { Link } from 'react-router-dom'
 import color, { tier2color } from '../../_config/color'
+import URL from '../../_config/config'
 const cx = classnames.bind(styles)
 
 export default function TagPage() {
     const [data, setData] = useState<ReactElement[]>([])
     useEffect(() => {
-        var url = '/v1/status/tag'
+        var url = `${URL}/v1/status/tag`
         fetch(url, {
             method: 'GET',
             headers: {
