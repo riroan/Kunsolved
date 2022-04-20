@@ -11,7 +11,14 @@
     @include mobile {
         width: 95vw;
     }
+}
+
+.container {
     display: flex;
+}
+
+.group {
+    margin-left: 20px;
 }
 
 .title {
@@ -20,12 +27,12 @@
     text-align: center;
     font-size: 1.3rem;
     vertical-align: middle;
-    height:40px;
-    line-height:40px;
-    font-weight:bold;
-    @include mobile{
-        margin:2px 6px;
-        font-size:1rem;
+    height: 40px;
+    line-height: 40px;
+    font-weight: bold;
+    @include mobile {
+        margin: 2px 6px;
+        font-size: 1rem;
     }
 }
 
@@ -34,17 +41,17 @@ button {
     margin: 10px;
     text-align: center;
     font-size: 1.2rem;
-    border-style:none;
-    height:40px;
+    border-style: none;
+    height: 40px;
     background-color: white;
-    border-radius:20px;
-    @include mobile{
-        margin:2px;
-        width:20%;
-        font-size:0.9rem;
+    border-radius: 20px;
+    @include mobile {
+        margin: 2px;
+        width: 20%;
+        font-size: 0.9rem;
     }
 }
 
-.selected{
-    background-color:#bbbbbb;
+.selected {
+    background-color: #bbbbbb;
 }

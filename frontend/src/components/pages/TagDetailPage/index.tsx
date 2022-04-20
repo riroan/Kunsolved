@@ -14,6 +14,7 @@ export default function TagDetailPage() {
     const { name } = useParams()
     const [data, setData] = useState<problemType[]>([])
     const [elements, setElements] = useState<ReactElement[]>([])
+    const [check, setCheck] = useState<boolean>(false)
     const updateElement = () => {
         const title = [
             <li key={-1} className={cx('list', 'title')}>
@@ -28,8 +29,8 @@ export default function TagDetailPage() {
                         <a key={ix} href={`https://www.acmicpc.net/problem/${value.id}`} className={cx('a')}>
                             <li className={cx('list')}>
                                 <span className={cx('name')}>
-                                    <img className={cx('image')} src={`https://static.solved.ac/tier_small/${value.tier}.svg`} alt={value.title} />
-                                    <div className={ cx('id')}>{value.id}</div>
+                                    {!check && <img className={cx('image')} src={`https://static.solved.ac/tier_small/${value.tier}.svg`} alt={value.title} />}
+                                    <div className={cx('id')}>{value.id}</div>
                                 </span>
                                 <span className={cx('value')}>{value.title}</span>
                             </li>
@@ -57,13 +58,17 @@ export default function TagDetailPage() {
     }, [name])
     useEffect(() => {
         updateElement()
-    }, [data])
+    }, [data, check])
     return (
         <div>
             <Header />
             <Menu />
             <div className={cx('header', 'common')}>{name}</div>
             <Sort
+                hide={true}
+                handleChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                    setCheck(event.target.checked)
+                }}
                 sortFunction={(flag, type) => {
                     if (type === SortType.RANDOM) {
                         setData(data.sort(() => Math.random() - 0.5))
