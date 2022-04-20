@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@emotion/react": "^11.9.0",
+    "@emotion/styled": "^11.8.1",
+    "@mui/icons-material": "^5.6.2",
+    "@mui/material": "^5.6.2",
     "@reduxjs/toolkit": "^1.8.1",
     "@testing-library/jest-dom": "^5.16.3",
     "@testing-library/react": "^12.1.4",
@@ -80,5 +84,5 @@
     "@types/react-svg-radar-chart": "^1.2.3",
     "webpack": "^5.70.0"
   },
-  "proxy":"https://api.riroan.com"
+  "proxy": "https://api.riroan.com"
 }
