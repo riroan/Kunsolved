@@ -59,7 +59,7 @@ async def solvedByTag():
     for i in util.getAllSolved():
         try:
             ret[d[i['name']]] += 1
-        except:
+        except Exception:
             pass
     util.db.commit()
     return ret

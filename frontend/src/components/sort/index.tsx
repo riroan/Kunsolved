@@ -74,4 +74,5 @@ export default function Sort({ sortFunction, handleChange, hide }: SortProps) {
 
 Sort.defaultProps = {
     hide: false,
+    handleChange: () => {},
 }

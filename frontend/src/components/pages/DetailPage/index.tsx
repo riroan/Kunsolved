@@ -16,7 +16,6 @@ export default function DetailPage() {
     const { level } = useParams()
     const [data, setData] = useState<problemType[]>([])
     const [elements, setElements] = useState<ReactElement[]>([])
-    const [check, setCheck] = useState<boolean>(false)
     const updateElement = () => {
         const title = [
             <li key={-1} className={cx('list', 'title')}>
@@ -67,10 +66,6 @@ export default function DetailPage() {
                 {level2tier(parseInt(level ? level : '0'))}
             </div>
             <Sort
-                handleChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                    setCheck(event.target.checked)
-                    console.log("hello")
-                }}
                 sortFunction={(flag, type) => {
                     if (type === SortType.RANDOM) {
                         setData(data.sort(() => Math.random() - 0.5))
