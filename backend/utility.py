@@ -98,7 +98,7 @@ class Utility:
                     pass
         self.db.commit()
 
-    # 존재하는 모든 문제 아이디, 제목을 db에 추가
+    # 존재하는 모든 문제 아이디, 제목을 db에 추가 이미 있으면 태그, 티어 업데이트
     def getProblemInfo(self):
         self.db = Database()
         ix = 1
@@ -119,17 +119,39 @@ class Utility:
                 title = problem['titleKo']
                 title = title.replace("\\", "\\\\").replace("'", "\\'").replace('"', '\\"').replace("%", "%%")
                 level = problem['level']
+                tags = problem['tags']
                 try:
                     query = f'INSERT INTO problem (id, title, tier) VALUES ({number}, \"{title}\", {level});'
                     self.db.execute(query)
-                    for tag in problem['tags']:
-                        t = tag['displayNames'][-1]['name']
+                    for tag in tags:
+                        for displayNames in tag['displayNames']:
+                            if displayNames['language'] == 'ko':
+                                t = displayNames['name']
                         query = f'INSERT INTO tag (id, name) VALUES ({number}, \"{t}\");'
                         self.db.execute(query)
                 except Exception:
-                    if self.debug_mode:
-                        print(f">> Warning : Problem {number} is already existed")
-                    continue
+                    query = f'UPDATE problem SET tier = {level} WHERE id = {number};'
+                    self.db.execute(query)
+                    query = f'SELECT * FROM tag WHERE id = {number};'
+                    existed = self.db.executeAll(query)
+                    e = {i['name']:True for i in existed}
+                    need = []
+                    for tag in tags:
+                        for displayNames in tag['displayNames']:
+                            if displayNames['language'] == 'ko':
+                                t = displayNames['name']
+                        if t not in e:
+                            need.append(t)
+                    if need:
+                        query = f'INSERT INTO tag (id, name) VALUES '
+                        for i, v in enumerate(need):
+                            if i == len(need)-1:
+                                query += f'({number},\"{v}\");'
+                            else:
+                                query += f'({number},\"{v}\"),'
+                        self.db.execute(query)
+                        if self.debug_mode:
+                            print(f">> Problem {number}'s tag is updated")
             ix += 1
         self.db.commit()
 
@@ -315,4 +337,4 @@ if __name__ == "__main__":
     utility = Utility(True)
     # data = utility.getWeeklyBest()
     # utility.getAllUser(194)
-    utility.getUnsolvedByLevel(12)
+    utility.getProblemInfo()
