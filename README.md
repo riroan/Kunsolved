@@ -1,6 +1,6 @@
 ## SchoolJoon
 
-# 프리티어가 끝나서 당분간 서비스 종료합니다.
+## 오라클 클라우드에서 재배포
 
 [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Friroan%2FSchoolJoon&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com) 
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/riroan/SchoolJoon.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/riroan/SchoolJoon/alerts/)
