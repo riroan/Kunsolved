@@ -21,18 +21,18 @@ export default function WeeklyBest() {
             .then(res => {
                 setData(res)
             })
-        url = `${URL}/v1/best/contrib`
-        fetch(url, {
-            method: 'GET',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-        })
-            .then(res => res.json())
-            .then(res => {
-                setContribData(res)
-            })
+        // url = `${URL}/v1/best/contrib`
+        // fetch(url, {
+        //     method: 'GET',
+        //     headers: {
+        //         Accept: 'application/json',
+        //         'Content-Type': 'application/json',
+        //     },
+        // })
+        //     .then(res => res.json())
+        //     .then(res => {
+        //         setContribData(res)
+        //     })
     }, [])
 
     return (
@@ -55,7 +55,7 @@ export default function WeeklyBest() {
                   })
                 }
                 </div>
-                <div className={cx('distribution-rank')}>
+                {/* <div className={cx('distribution-rank')}>
                     <div className={cx('rank-title')}>학교 랭킹 기여</div>
                     {contribData.map((value, i) => {
                         return (
@@ -69,7 +69,7 @@ export default function WeeklyBest() {
                         )
                     })
                     }
-                </div>
+                </div> */}
             </div>
         </div>
     )
