@@ -24,11 +24,15 @@ class Utility:
         self.db = Database()
         self.debug_mode = debug_mode
     
+    def log(self, message):
+        now = now = datetime.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+        print(f">> Log ({now}): {message}")
+    
     # 특정 유저가 해결한 문제들 반환
     def getUserInfo(self, user):  
         self.db = Database()
         url = f"https://acmicpc.net/user/{user}"
-        time.sleep(2)
+        time.sleep(10)
         response = requests.get(url, headers=self.headers)
         if response.status_code == 200:
             html = response.text
@@ -43,7 +47,7 @@ class Utility:
         self.db = Database()
         url = f"https://www.acmicpc.net/school/ranklist/{number}/{page}"
         response = requests.get(url, headers=self.headers)
-        time.sleep(2)
+        time.sleep(10)
         if response.status_code == 200:
             html = response.text
             soup = BeautifulSoup(html, 'html.parser')
@@ -53,11 +57,12 @@ class Utility:
             return []
     
     # 특정 학교 구성원이 최근에 해결한 문제 반환
-    def getRecentSolved(self, number):
+    def getRecentSolved(self, number=194):
+        self.log("getRecentSolved")
         self.db = Database()
         url = f"https://www.acmicpc.net/status?school_id={number}"
         response = requests.get(url, headers=self.headers)
-        time.sleep(2)
+        time.sleep(10)
         if response.status_code==200:
             html = response.text
             soup = BeautifulSoup(html, 'html.parser')
@@ -100,11 +105,12 @@ class Utility:
 
     # 존재하는 모든 문제 아이디, 제목을 db에 추가 이미 있으면 태그, 티어 업데이트
     def getProblemInfo(self):
+        self.log("getProblemInfo")
         self.db = Database()
         ix = 1
         while True:
             url = f"https://solved.ac/api/v3/search/problem?query=solvable:true&page={ix}"
-            time.sleep(2)
+            time.sleep(10)
             response = requests.get(url)
             try:
                 items = json.loads(response.text)
@@ -171,7 +177,8 @@ class Utility:
 
 
     # 특정 학교에 존재하는 모든 유저 아이디 db에 추가
-    def updateSchoolUser(self, number):
+    def updateSchoolUser(self, number=194):
+        self.log("updateSchoolUser")
         self.db = Database()
         users = self.getAllUser(number)
         for user in users:
@@ -184,6 +191,7 @@ class Utility:
 
     # 특정 학교에 존재하는 모든 유저의 해결한 문제 업데이트
     def updateAllUserSolved(self):
+        self.log("updateAllUserSolved")
         self.db = Database()
         query = f"select * from school;"
         users = self.db.executeAll(query)
@@ -198,7 +206,8 @@ class Utility:
                         print(
                             f">> Warning : Problem {solve} solved by {user} is already existed")
                     continue
-                query = f"INSERT INTO solve (name, id, solved_at) VALUES ('{user}', {solve}, '2020-04-08 04:32:01');"
+                now = datetime.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+                query = f"INSERT INTO solve (name, id, solved_at) VALUES ('{user}', {solve}, '{now}');"
                 self.db.execute(query)
                 query = f"UPDATE problem SET is_solved=true WHERE id={solve};"
                 self.db.execute(query)
@@ -337,4 +346,5 @@ if __name__ == "__main__":
     utility = Utility(True)
     # data = utility.getWeeklyBest()
     # utility.getAllUser(194)
-    utility.getProblemInfo()
+    # utility.getProblemInfo()
+    utility.updateAllUserSolved()
