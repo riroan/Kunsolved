@@ -314,7 +314,7 @@ class Utility:
         data = self.db.executeAll(query)
         ret = []
         for d in data:
-            ret.append({"id": d["id"], "title": d['title'], "tier": d["tier"]})
+            ret.append({"id": d["id"], "title": d['title'], "tier": d["tier"], "num_solved":d["num_solved"]})
         return ret
     
     # 특정 태그 중에 해결 못한 문제들 반환
@@ -324,7 +324,7 @@ class Utility:
         data = self.db.executeAll(query)
         ret = []
         for d in data:
-            ret.append({"id":d["id"],"title": d['title'], "tier": d["tier"]})
+            ret.append({"id":d["id"],"title": d['title'], "tier": d["tier"], "num_solved":d["num_solved"]})
         return ret
     
     # 해당 날짜가 포함된 월~일 중에 가장 많이 푼 사람 5명 리턴

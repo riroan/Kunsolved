@@ -16,6 +16,7 @@ export enum SortType {
     LEVEL = 1,
     TITLE = 2,
     RANDOM = 3,
+    NUM_SOLVED = 4,
 }
 
 export default function Sort({ sortFunction, handleChange, hide }: SortProps) {
@@ -23,7 +24,7 @@ export default function Sort({ sortFunction, handleChange, hide }: SortProps) {
     const [arrow, setArrow] = useState(<MdArrowUpward />)
     const [arrowIx, setArrowIx] = useState(0)
     const [check, setCheck] = useState(false)
-    const elements = ['번호', '레벨', '제목', '랜덤']
+    const elements = ['번호', '레벨', '제목', '랜덤', '푼 사람수']
     return (
         <div className={cx('main')}>
             <div className={cx('container')}>
