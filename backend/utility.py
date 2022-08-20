@@ -87,7 +87,8 @@ class Utility:
         else:
             return [], []
         
-    def addRecentSolved(self, number):
+    def addRecentSolved(self, number=194):
+        self.log("addRecentSolved")
         self.db = Database()
         users, problems = self.getRecentSolved(number)
         for user, problem in zip(users, problems):
@@ -126,8 +127,9 @@ class Utility:
                 title = title.replace("\\", "\\\\").replace("'", "\\'").replace('"', '\\"').replace("%", "%%")
                 level = problem['level']
                 tags = problem['tags']
+                num_solved = problem["acceptedUserCount"]
                 try:
-                    query = f'INSERT INTO problem (id, title, tier) VALUES ({number}, \"{title}\", {level});'
+                    query = f'INSERT INTO problem (id, title, tier, num_solved) VALUES ({number}, \"{title}\", {level}, {num_solved});'
                     self.db.execute(query)
                     for tag in tags:
                         for displayNames in tag['displayNames']:
@@ -158,6 +160,8 @@ class Utility:
                         self.db.execute(query)
                         if self.debug_mode:
                             print(f">> Problem {number}'s tag is updated")
+                    query = f'UPDATE problem SET num_solved = {num_solved} WHERE id = {number};'
+                    self.db.execute(query)
             ix += 1
         self.db.commit()
 
@@ -206,7 +210,8 @@ class Utility:
                         print(
                             f">> Warning : Problem {solve} solved by {user} is already existed")
                     continue
-                now = datetime.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+                # now = datetime.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+                now = "2022-04-01 01:00:00"
                 query = f"INSERT INTO solve (name, id, solved_at) VALUES ('{user}', {solve}, '{now}');"
                 self.db.execute(query)
                 query = f"UPDATE problem SET is_solved=true WHERE id={solve};"
@@ -325,7 +330,8 @@ class Utility:
     # 해당 날짜가 포함된 월~일 중에 가장 많이 푼 사람 5명 리턴
     def getWeeklyBest(self):
         self.db = Database()
-        startDate, endDate = getWeekDate(datetime.datetime.now() - datetime.timedelta(hours=-9))
+        startDate, endDate = getWeekDate(datetime.datetime.now())
+
         query = f"SELECT name, COUNT(id) cnt FROM solve WHERE solved_at >= '{startDate}' GROUP BY name ORDER BY cnt DESC;"
         data = self.db.executeAll(query)[:10]
         return data
@@ -333,7 +339,7 @@ class Utility:
     def getContributeBest(self):
         self.db = Database()
         startDate, _ = getWeekDate(
-            datetime.datetime.now() - datetime.timedelta(hours=-9))
+            datetime.datetime.now())
         query = f"SELECT sub.name name, sum(sub.cnt) cnt FROM (SELECT name, COUNT(id) cnt, solved_at FROM solve GROUP BY id HAVING solved_at>='{startDate}') sub GROUP BY sub.name ORDER BY cnt DESC;"
         data = self.db.executeAll(query)[:10]
         ret = []
@@ -346,5 +352,5 @@ if __name__ == "__main__":
     utility = Utility(True)
     # data = utility.getWeeklyBest()
     # utility.getAllUser(194)
-    # utility.getProblemInfo()
-    utility.updateAllUserSolved()
+    utility.getProblemInfo()
+    # print(utility.addRecentSolved())
