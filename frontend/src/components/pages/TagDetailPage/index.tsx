@@ -100,6 +100,13 @@ export default function TagDetailPage() {
                                     return 0
                                 }
                                 break
+                            case SortType.NUM_SOLVED:
+                                cmp = (a: problemType, b: problemType) => {
+                                    if (a.num_solved > b.num_solved) return 1
+                                    else if (a.num_solved < b.num_solved) return -1
+                                    return 0
+                                }
+                                break
                         }
                         setData(data.sort(cmp))
                     }
