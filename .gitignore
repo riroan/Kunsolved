@@ -230,3 +230,4 @@ storybook-static/
 *.out
 
 backend/issues
+config.yml
