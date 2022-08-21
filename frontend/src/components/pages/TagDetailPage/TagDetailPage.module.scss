@@ -82,11 +82,13 @@
     margin-right: 20px;
 }
 
-.all {
-    font-size: 1.2vh;
+.all{
+    @include desktop{
+        font-size:1.2vw;
+    }
     text-align: center;
-    padding: 10px;
-    font-weight: bold;
+    padding:10px;
+    font-weight:bold;
 }
 
 .id{
