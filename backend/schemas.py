@@ -5,24 +5,32 @@ from pydantic import BaseModel
 
 class ExperienceBase(BaseModel):
     tier: int
-    exp: int
     name: str
+    exp: int
 
 
 class ExperienceCreate(ExperienceBase):
     pass
 
 
+class Experience(ExperienceBase):
+    class Config:
+        orm_mode = True
+
 class ProblemBase(BaseModel):
-    pass
-
-
-class ProblemCreate(ProblemBase):
     id: int
     title: str
     tier: int
     num_solved: int
 
+
+class ProblemCreate(ProblemBase):
+    pass
+
+class Problem(ProblemBase):
+    is_solved: bool
+    class Config:
+        orm_mode = True
 
 class TagBase(BaseModel):
     pass
