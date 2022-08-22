@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-from database import Database
+from .database import Database
 from tqdm import tqdm
 import requests
 import time
