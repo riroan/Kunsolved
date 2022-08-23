@@ -17,6 +17,7 @@ class Experience(ExperienceBase):
     class Config:
         orm_mode = True
 
+
 class ProblemBase(BaseModel):
     id: int
     title: str
@@ -27,25 +28,33 @@ class ProblemBase(BaseModel):
 class ProblemCreate(ProblemBase):
     pass
 
+
 class Problem(ProblemBase):
     is_solved: bool
+
     class Config:
         orm_mode = True
 
+
 class TagBase(BaseModel):
-    pass
-
-
-class TagCreate(TagBase):
     id: int
     name: str
 
 
-class SchoolBase(BaseModel):
+class TagCreate(TagBase):
+    pass
+
+
+class Tag(TagBase):
+    class Config:
+        orm_mode = True
+
+
+class UserBase(BaseModel):
     name: str
 
 
-class SchoolCreate(SchoolBase):
+class UserCreate(UserBase):
     pass
 
 
