@@ -231,3 +231,4 @@ storybook-static/
 
 backend/issues
 config.yml
+*.db
