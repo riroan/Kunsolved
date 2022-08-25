@@ -1,28 +1,12 @@
-import pymysql
-from secret import SECRET
+import yaml
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
+config = yaml.safe_load(open("config.yml"))
+DATABASE_URL = config.get("DATABASE_URL")
 
-class Database:
-    def __init__(self):
-        self.db = pymysql.connect(host=SECRET.host, user=SECRET.user,
-                                  password=SECRET.password, db=SECRET.db, charset=SECRET.charset)
-        self.cursor = self.db.cursor(pymysql.cursors.DictCursor)
-    
-    def __del__(self):
-        self.db.close()
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-    def execute(self, query, args={}):
-        self.cursor.execute(query, args)
-
-    def executeOne(self, query, args={}):
-        self.cursor.execute(query, args)
-        row = self.cursor.fetchone()
-        return row
-
-    def executeAll(self, query, args={}):
-        self.cursor.execute(query, args)
-        row = self.cursor.fetchall()
-        return row
-
-    def commit(self):
-        self.db.commit()
+Base = declarative_base()

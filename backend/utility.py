@@ -1,53 +1,60 @@
 from bs4 import BeautifulSoup
-from database import Database
+from database import Database, SessionLocal, engine
 from tqdm import tqdm
+
 import requests
 import time
 import json
 import datetime
+import crud
+import schemas
+import models
+
 
 def addDays(sourceDate, count):
     targetDate = sourceDate + datetime.timedelta(days=count)
     return targetDate
 
+
 def getWeekDate(sourceDate):
-    temporaryDate = datetime.datetime(sourceDate.year, sourceDate.month, sourceDate.day)
+    temporaryDate = datetime.datetime(
+        sourceDate.year, sourceDate.month, sourceDate.day)
     weekDayCount = temporaryDate.weekday()
     startDate = addDays(temporaryDate, -weekDayCount)
     endDate = addDays(startDate, 7)
     return str(startDate), str(endDate)
 
+
 class Utility:
-    def __init__(self, debug_mode = False):
+    def __init__(self, debug_mode=False):
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36'}
-        self.db = Database()
         self.debug_mode = debug_mode
-    
+        self.session = SessionLocal()
+
     def log(self, message):
         now = now = datetime.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
         print(f">> Log ({now}): {message}")
-    
+
     # 특정 유저가 해결한 문제들 반환
-    def getUserInfo(self, user):  
-        self.db = Database()
+    def getUserInfo(self, user):
         url = f"https://acmicpc.net/user/{user}"
-        time.sleep(10)
+        time.sleep(3)
         response = requests.get(url, headers=self.headers)
         if response.status_code == 200:
             html = response.text
             soup = BeautifulSoup(html, 'html.parser')
-            elements = soup.select('div.panel-body > div.problem-list')[0].text.strip().split(" ")
+            elements = soup.select(
+                'div.panel-body > div.problem-list')[0].text.strip().split(" ")
             return [int(element) for element in elements]
         else:
             return []
 
     # 특정 학교 구성원의 아이디 반환
     def getSchoolInfo(self, number, page=1):
-        self.db = Database()
         url = f"https://www.acmicpc.net/school/ranklist/{number}/{page}"
         response = requests.get(url, headers=self.headers)
-        time.sleep(10)
+        time.sleep(5)
         if response.status_code == 200:
             html = response.text
             soup = BeautifulSoup(html, 'html.parser')
@@ -55,29 +62,29 @@ class Utility:
             return [user.text for user in users]
         else:
             return []
-    
+
     # 특정 학교 구성원이 최근에 해결한 문제 반환
     def getRecentSolved(self, number=194):
         self.log("getRecentSolved")
-        self.db = Database()
         url = f"https://www.acmicpc.net/status?school_id={number}"
         response = requests.get(url, headers=self.headers)
         time.sleep(10)
-        if response.status_code==200:
+        if response.status_code == 200:
             html = response.text
             soup = BeautifulSoup(html, 'html.parser')
-            users = soup.select('#status-table > tbody > tr > td:nth-child(2) > a')
-            
+            users = soup.select(
+                '#status-table > tbody > tr > td:nth-child(2) > a')
+
             users = [user.text for user in users]
-            
+
             problems = soup.select(
                 '#status-table > tbody > tr > td:nth-child(3) > a')
             problems = [problem.text for problem in problems]
             status = soup.select(
                 '#status-table > tbody > tr > td:nth-child(4) > span')
 
-            status = [str(st) for st in status if st.text !='\xa0']
-            
+            status = [str(st) for st in status if st.text != '\xa0']
+
             ret_user, ret_problem = [], []
             for user, problem, st in zip(users, problems, status):
                 if "result-ac" in st:
@@ -86,32 +93,26 @@ class Utility:
             return ret_user, ret_problem
         else:
             return [], []
-        
+
     def addRecentSolved(self, number=194):
         self.log("addRecentSolved")
-        self.db = Database()
         users, problems = self.getRecentSolved(number)
-        for user, problem in zip(users, problems):
-            query = f'SELECT * FROM solve WHERE id={problem} AND name="{user}"'
-            data = self.db.executeOne(query)
+        for user, problem_id in zip(users, problems):
+            data = crud.read_solve(self.session, problem_id, user)
             if data is None:
                 try:
-                    query = f'INSERT INTO solve (name, id) VALUES ("{user}", {problem});'
-                    self.db.execute(query)
-                    query = f'UPDATE problem SET is_solved=true WHERE id={problem};'
-                    self.db.execute(query)
+                    crud.create_solve(self.session, schemas.SolveCreate(
+                        name=user, id=problem_id))
                 except Exception:
                     pass
-        self.db.commit()
 
     # 존재하는 모든 문제 아이디, 제목을 db에 추가 이미 있으면 태그, 티어 업데이트
     def getProblemInfo(self):
         self.log("getProblemInfo")
-        self.db = Database()
         ix = 1
         while True:
             url = f"https://solved.ac/api/v3/search/problem?query=solvable:true&page={ix}"
-            time.sleep(10)
+            time.sleep(3)
             response = requests.get(url)
             try:
                 items = json.loads(response.text)
@@ -124,25 +125,27 @@ class Utility:
             for problem in problems:
                 number = problem['problemId']
                 title = problem['titleKo']
-                title = title.replace("\\", "\\\\").replace("'", "\\'").replace('"', '\\"').replace("%", "%%")
+                title = title.replace("\\", "\\\\").replace(
+                    "'", "\\'").replace('"', '\\"').replace("%", "%%")
                 level = problem['level']
                 tags = problem['tags']
                 num_solved = problem["acceptedUserCount"]
                 try:
-                    query = f'INSERT INTO problem (id, title, tier, num_solved) VALUES ({number}, \"{title}\", {level}, {num_solved});'
-                    self.db.execute(query)
+                    crud.create_problem(self.session, schemas.ProblemCreate(
+                        id=number, title=title, tier=level, num_solved=num_solved))
                     for tag in tags:
                         for displayNames in tag['displayNames']:
                             if displayNames['language'] == 'ko':
                                 t = displayNames['name']
-                        query = f'INSERT INTO tag (id, name) VALUES ({number}, \"{t}\");'
-                        self.db.execute(query)
+                        crud.create_tag(
+                            self.session, schemas.TagCreate(id=number, name=t))
                 except Exception:
-                    query = f'UPDATE problem SET tier = {level} WHERE id = {number};'
-                    self.db.execute(query)
-                    query = f'SELECT * FROM tag WHERE id = {number};'
-                    existed = self.db.executeAll(query)
-                    e = {i['name']:True for i in existed}
+                    if self.debug_mode:
+                        print(f">> Problem {number} is already existed")
+                    self.session.rollback()
+                    crud.update_problem_tier(self.session, number, level)
+                    existed = crud.read_tag(self.session, number)
+                    e = {i.name: True for i in existed}
                     need = []
                     for tag in tags:
                         for displayNames in tag['displayNames']:
@@ -151,24 +154,18 @@ class Utility:
                         if t not in e:
                             need.append(t)
                     if need:
-                        query = f'INSERT INTO tag (id, name) VALUES '
-                        for i, v in enumerate(need):
-                            if i == len(need)-1:
-                                query += f'({number},\"{v}\");'
-                            else:
-                                query += f'({number},\"{v}\"),'
-                        self.db.execute(query)
+                        for v in need:
+                            crud.create_tag(
+                                self.session, schemas.TagCreate(id=number, name=v))
                         if self.debug_mode:
                             print(f">> Problem {number}'s tag is updated")
-                    query = f'UPDATE problem SET num_solved = {num_solved} WHERE id = {number};'
-                    self.db.execute(query)
+                    crud.update_problem_num_solved(
+                        self.session, number, num_solved)
             ix += 1
-        self.db.commit()
-
+            print(ix)
 
     # 특정 학교에 존재하는 모든 유저 아이디 반환
     def getAllUser(self, number):
-        self.db = Database()
         ix = 1
         users = []
         while True:
@@ -179,68 +176,54 @@ class Utility:
             ix += 1
         return users
 
-
     # 특정 학교에 존재하는 모든 유저 아이디 db에 추가
     def updateSchoolUser(self, number=194):
         self.log("updateSchoolUser")
-        self.db = Database()
         users = self.getAllUser(number)
+
         for user in users:
             try:
-                self.db.execute(f"INSERT INTO school (name) VALUES ('{user}');")
+                crud.create_user(self.session, schemas.UserCreate(name=user))
             except Exception:
+                self.session.rollback()
                 if self.debug_mode:
                     print(f">> Warning : User {user} is already existed")
-        self.db.commit()
 
     # 특정 학교에 존재하는 모든 유저의 해결한 문제 업데이트
     def updateAllUserSolved(self):
         self.log("updateAllUserSolved")
-        self.db = Database()
-        query = f"select * from school;"
-        users = self.db.executeAll(query)
-        users = [user["name"] for user in users]
+        users = crud.read_all_user(self.session)
+        users = [user.name for user in users]
         for user in tqdm(users):
             solved = self.getUserInfo(user)
             for solve in solved:
-                query = f"SELECT * FROM solve WHERE name = '{user}' AND id = {solve};"
-                data = self.db.executeOne(query)
+                data = crud.read_solve(self.session, solve, user)
                 if data:
                     if self.debug_mode:
                         print(
                             f">> Warning : Problem {solve} solved by {user} is already existed")
                     continue
-                # now = datetime.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
-                now = "2022-04-01 01:00:00"
-                query = f"INSERT INTO solve (name, id, solved_at) VALUES ('{user}', {solve}, '{now}');"
-                self.db.execute(query)
-                query = f"UPDATE problem SET is_solved=true WHERE id={solve};"
-                self.db.execute(query)
+                crud.create_solve(
+                    self.session, schemas.SolveCreate(name=user, id=solve))
+                crud.update_problem_is_solved(self.session, solve)
                 if self.debug_mode:
-                    print(f">> Log : Problem {solve} solved by {user} is appended")
-            self.db.commit()
+                    print(
+                        f">> Log : Problem {solve} solved by {user} is appended")
 
     # 특정 학교 구성원이 해결한 모든 문제 반환
-    def getAllSolved(self, tag=""):
-        self.db = Database()
-        if tag=="":
-            query = "SELECT problem.id, problem.tier, tag.name FROM problem, tag WHERE problem.id=tag.id AND problem.is_solved = true;"
-        else:
-            query = f"SELECT problem.id, problem.tier FROM problem, tag WHERE problem.id = tag.id AND problem.is_solved=true AND tag.name='{tag}';"
-        data = self.db.executeAll(query)
+    def getProblemSolvedByTag(self, tag):
+        data = crud.read_problem_solved_by_tag(self.session, tag)
         return data
 
     # 특정 학교 구성원이 해결한 모든 문제를 난이도별 개수로 반환
-    def getCountSolvedByLevel(self, verbose=0):
-        self.db = Database()
-        query = "SELECT problem.tier, COUNT(DISTINCT solve.id) cnt FROM solve, problem WHERE solve.id = problem.id GROUP BY problem.tier ORDER BY problem.tier;"
-        data = self.db.executeAll(query)
-        if verbose == 0: # 브론즈, 실버, 골드...
+    def getProblemSolvedByLevel(self, verbose=0):
+        data = crud.read_all_problem_solved(self.session)
+        if verbose == 0:  # 브론즈, 실버, 골드...
             NUM_TIER = 7
             cnt = [0] * NUM_TIER
             for d in data:
-                cnt[(d['tier']+4)//5] += d['cnt']
-        elif verbose == 1: # 브론즈5, 브론즈4, 브론즈3, ...
+                cnt[(d.tier+4)//5] += 1
+        elif verbose == 1:  # 브론즈5, 브론즈4, 브론즈3, ...
             NUM_TIER = 31
             cnt = [0] * NUM_TIER
             for d in data:
@@ -248,109 +231,125 @@ class Utility:
         return cnt
 
     def getCountAllSolvedByTag(self):
-        self.db = Database()
-        query = "SELECT tag.name, COUNT(DISTINCT solve.id) cnt FROM solve, problem, tag WHERE solve.id = problem.id AND solve.id = tag.id GROUP BY tag.name;"
-        data = self.db.executeAll(query)
+        data = crud.read_count_solved_by_tag(self.session, "수학")  # 수정 필요
+        print(data)
+        assert 0
         ret = dict()
         for d in data:
             ret[d['name']] = d['cnt']
         return ret
 
     def getCountSolvedByTag(self, tag):
-        self.db = Database()
-        # query = f'SELECT DISTINCT solve.id, tag.name FROM solve, problem, tag WHERE solve.id = problem.id AND solve.id = tag.id AND tag.name="{tag}";'
-        # data = self.db.executeAll(query)
-        # return [d["id"] for d in data]
         try:
             return self.getCountAllSolvedByTag()[tag]
         except KeyError:
             return 0
-    
+
     def getAllExp(self):
-        self.db = Database()
-        query = "SELECT * FROM experience;"
-        data = self.db.executeAll(query)
-        NUM_TIER = 31
-        ret = [0]*NUM_TIER
-        for d in data:
-            ret[d['tier']] = d['exp']
-        return ret
-    
+        pass
+        # query = "SELECT * FROM experience;"
+        # data = self.db.executeAll(query)
+        # NUM_TIER = 31
+        # ret = [0]*NUM_TIER
+        # for d in data:
+        #     ret[d['tier']] = d['exp']
+        # return ret
+
     def getStatusByLevel(self):
-        self.db = Database()
-        query = "SELECT COUNT(p.tier) cnt, e.name, e.tier FROM problem p, experience e WHERE p.tier = e.tier GROUP BY p.tier;"
-        all_count = self.db.executeAll(query)
-        
-        query = "SELECT COUNT(distinct solve.id) cnt, problem.tier FROM solve, problem WHERE solve.id = problem.id GROUP BY problem.tier;"
-        solved_count = self.db.executeAll(query)
-        
+        all_count = crud.read_all_problem_count_by_tier(self.session)
+        solved_count = crud.read_problem_solved_count_by_tier(self.session)
+        all_count_dict = {}
+        solved_count_dict = {}
+
+        for cnt, tier in all_count:
+            all_count_dict[tier] = cnt
+        for cnt, tier in solved_count:
+            solved_count_dict[tier] = cnt
+
         data = {}
-        for d in all_count:
-            data[d['tier']] = {'name':d['name'], 'all_cnt':d['cnt'], 'solved_cnt':0}
-        for d in solved_count:
-            data[d['tier']]['solved_cnt'] = d['cnt']
+        for cnt, tier in all_count:
+            data[tier] = {"all_cnt": all_count_dict[tier], "solved_cnt": 0}
+        for cnt, tier in solved_count:
+            data[tier]["solved_cnt"] = cnt
         return data
-    
+
     def getStatusByTag(self):
-        self.db = Database()
-        query = "SELECT COUNT(t.name) cnt, t.name FROM problem p, tag t WHERE p.id = t.id GROUP BY t.name ORDER BY cnt DESC;"
-        all_count = self.db.executeAll(query)
-        
-        # query = "SELECT COUNT(distinct problem.id) cnt, tag.name FROM solve, problem, tag WHERE solve.id = problem.id AND problem.id = tag.id GROUP BY tag.name;"
-        query = "SELECT COUNT(distinct t.id) cnt, t.name FROM tag t, (SELECT id FROM solve GROUP BY id) p WHERE p.id = t.id GROUP BY t.name;"
-        solved_count = self.db.executeAll(query)
-        
+        all_count = crud.read_all_problem_count_by_tag(self.session)
+        solved_count = crud.read_problem_solved_count_by_tag(self.session)
+        all_count_dict = {}
+        solved_count_dict = {}
+
+        for cnt, tag in all_count:
+            all_count_dict[tag] = cnt
+        for cnt, tag in solved_count:
+            solved_count_dict[tag] = cnt
+
         data = {}
-        for d in all_count:
-            data[d['name']] = {'all_cnt':d['cnt'], 'solved_cnt':0}
-        for d in solved_count:
-            data[d['name']]['solved_cnt'] = d['cnt']
+        for cnt, tag in all_count:
+            data[tag] = {"all_cnt": all_count_dict[tag], "solved_cnt": 0}
+        for cnt, tag in solved_count:
+            data[tag]["solved_cnt"] = cnt
         return data
-    
+
     # 특정 티어 중에 해결 못한 문제들 반환
     def getUnsolvedByLevel(self, tier):
-        self.db = Database()
-        query = f"SELECT * FROM problem WHERE is_solved = false AND tier={tier};"
-        data = self.db.executeAll(query)
+        data = crud.read_problem_unsolved_by_tier(self.session, tier)
         ret = []
-        for d in data:
-            ret.append({"id": d["id"], "title": d['title'], "tier": d["tier"], "num_solved":d["num_solved"]})
+        for problem in data:
+            ret.append({"id": problem.id, "title": problem.title,
+                       "tier": problem.tier, "num_solved": problem.num_solved})
         return ret
-    
+
     # 특정 태그 중에 해결 못한 문제들 반환
     def getUnsolvedByTag(self, name):
-        self.db = Database()
-        query = f"SELECT * FROM problem, tag WHERE problem.id = tag.id AND problem.is_solved = false AND tag.name='{name}';"
-        data = self.db.executeAll(query)
+        data = crud.read_problem_unsolved_by_tag(self.session, name)
         ret = []
-        for d in data:
-            ret.append({"id":d["id"],"title": d['title'], "tier": d["tier"], "num_solved":d["num_solved"]})
+        for problem, tag in data:
+            ret.append({"id": problem.id, "title": problem.title,
+                       "tier": problem.tier, "num_solved": problem.num_solved})
         return ret
-    
+
     # 해당 날짜가 포함된 월~일 중에 가장 많이 푼 사람 5명 리턴
     def getWeeklyBest(self):
-        self.db = Database()
         startDate, endDate = getWeekDate(datetime.datetime.now())
-
-        query = f"SELECT name, COUNT(id) cnt FROM solve WHERE solved_at >= '{startDate}' GROUP BY name ORDER BY cnt DESC;"
-        data = self.db.executeAll(query)[:10]
+        data = crud.read_user_after_date_order_by_num_solved(
+            self.session, startDate)
         return data
-    
+
+    # 기여가 가장 많은 사람 리턴 (수정 필요)
     def getContributeBest(self):
-        self.db = Database()
-        startDate, _ = getWeekDate(
-            datetime.datetime.now())
-        query = f"SELECT sub.name name, sum(sub.cnt) cnt FROM (SELECT name, COUNT(id) cnt, solved_at FROM solve GROUP BY id HAVING solved_at>='{startDate}') sub GROUP BY sub.name ORDER BY cnt DESC;"
-        data = self.db.executeAll(query)[:10]
-        ret = []
-        for d in data:
-            d['cnt'] = int(d['cnt'])
-            ret.append(d)
-        return ret
+        pass
+        # startDate, _ = getWeekDate(
+        #     datetime.datetime.now())
+        # query = f"SELECT sub.name name, sum(sub.cnt) cnt FROM (SELECT name, COUNT(id) cnt, solved_at FROM solve GROUP BY id HAVING solved_at>='{startDate}') sub GROUP BY sub.name ORDER BY cnt DESC;"
+        # data = self.db.executeAll(query)[:10]
+        # ret = []
+        # for d in data:
+        #     d['cnt'] = int(d['cnt'])
+        #     ret.append(d)
+        # return ret
+
 
 if __name__ == "__main__":
-    utility = Utility(True)
+    models.Base.metadata.create_all(bind=engine)
+    utility = Utility(False)
     # data = utility.getWeeklyBest()
     # utility.getAllUser(194)
-    utility.getProblemInfo()
+    # utility.getProblemInfo()
     # print(utility.addRecentSolved())
+    # utility.updateSchoolUser()
+    # utility.getProblemInfo()
+    # utility.updateAllUserSolved()
+    # data = utility.getUnsolvedByLevel(3)
+    # print(data)
+    # print(crud.read_problem_unsolved_by_tag())
+    # print(utility.getCountSolvedByTag("수학"))
+    # data = utility.getProblemSolvedByLevel()
+    # print(data)
+
+    # utility.getProblemInfo()
+    # utility.updateSchoolUser()
+    # utility.updateAllUserSolved()
+
+    data = utility.getStatusByLevel()
+    print(data)

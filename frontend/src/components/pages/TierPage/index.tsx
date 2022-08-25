@@ -7,6 +7,7 @@ import classnames from 'classnames/bind'
 import { Link } from 'react-router-dom'
 import color, { tier2color } from '../../_config/color'
 import URL from '../../_config/config'
+import level2tier from '../../_config/tier';
 const cx = classnames.bind(styles)
 
 export default function TierPage() {
@@ -30,7 +31,7 @@ export default function TierPage() {
                     </li>,
                 ]
                 for (var i in res) {
-                    tmp.push({ level: parseInt(i), ...res[i] })
+                    tmp.push({ level: parseInt(i), name: level2tier(parseInt(i)), ...res[i] })
                 }
                 setData(
                     title.concat(
