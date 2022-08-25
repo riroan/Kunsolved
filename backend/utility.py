@@ -98,20 +98,13 @@ class Utility:
         self.log("addRecentSolved")
         users, problems = self.getRecentSolved(number)
         for user, problem_id in zip(users, problems):
-            # query = f'SELECT * FROM solve WHERE id={problem} AND name="{user}"'
-            # data = self.db.executeOne(query)
             data = crud.read_solve(self.session, problem_id, user)
             if data is None:
                 try:
-                    # query = f'INSERT INTO solve (name, id) VALUES ("{user}", {problem});'
-                    # self.db.execute(query)
                     crud.create_solve(self.session, schemas.SolveCreate(
                         name=user, id=problem_id))
-                    # query = f'UPDATE problem SET is_solved=true WHERE id={problem};'
-                    # self.db.execute(query)
                 except Exception:
                     pass
-        # self.db.commit()
 
     # 존재하는 모든 문제 아이디, 제목을 db에 추가 이미 있으면 태그, 티어 업데이트
     def getProblemInfo(self):
@@ -166,7 +159,8 @@ class Utility:
                                 self.session, schemas.TagCreate(id=number, name=v))
                         if self.debug_mode:
                             print(f">> Problem {number}'s tag is updated")
-                    crud.update_problem_num_solved(self.session, number, num_solved)
+                    crud.update_problem_num_solved(
+                        self.session, number, num_solved)
             ix += 1
             print(ix)
 
@@ -186,18 +180,14 @@ class Utility:
     def updateSchoolUser(self, number=194):
         self.log("updateSchoolUser")
         users = self.getAllUser(number)
-        
+
         for user in users:
             try:
                 crud.create_user(self.session, schemas.UserCreate(name=user))
-            # break
-                # self.db.execute(
-                #     f"INSERT INTO school (name) VALUES ('{user}');")
             except Exception:
                 self.session.rollback()
                 if self.debug_mode:
                     print(f">> Warning : User {user} is already existed")
-        # self.db.commit()
 
     # 특정 학교에 존재하는 모든 유저의 해결한 문제 업데이트
     def updateAllUserSolved(self):
@@ -213,31 +203,26 @@ class Utility:
                         print(
                             f">> Warning : Problem {solve} solved by {user} is already existed")
                     continue
-                crud.create_solve(self.session, schemas.SolveCreate(name = user, id = solve))
+                crud.create_solve(
+                    self.session, schemas.SolveCreate(name=user, id=solve))
                 crud.update_problem_is_solved(self.session, solve)
                 if self.debug_mode:
                     print(
                         f">> Log : Problem {solve} solved by {user} is appended")
 
     # 특정 학교 구성원이 해결한 모든 문제 반환
-    def getAllSolved(self, tag=""):
-        # if tag == "":
-        #     query = "SELECT problem.id, problem.tier, tag.name FROM problem, tag WHERE problem.id=tag.id AND problem.is_solved = true;"
-        # else:
-        #     query = f"SELECT problem.id, problem.tier FROM problem, tag WHERE problem.id = tag.id AND problem.is_solved=true AND tag.name='{tag}';"
-        # data = self.db.executeAll(query)
-        data = crud.read_all_problem_solved(self.session)
+    def getProblemSolvedByTag(self, tag):
+        data = crud.read_problem_solved_by_tag(self.session, tag)
         return data
 
     # 특정 학교 구성원이 해결한 모든 문제를 난이도별 개수로 반환
-    def getCountSolvedByLevel(self, verbose=0):
-        query = "SELECT problem.tier, COUNT(DISTINCT solve.id) cnt FROM solve, problem WHERE solve.id = problem.id GROUP BY problem.tier ORDER BY problem.tier;"
-        data = self.db.executeAll(query)
+    def getProblemSolvedByLevel(self, verbose=0):
+        data = crud.read_all_problem_solved(self.session)
         if verbose == 0:  # 브론즈, 실버, 골드...
             NUM_TIER = 7
             cnt = [0] * NUM_TIER
             for d in data:
-                cnt[(d['tier']+4)//5] += d['cnt']
+                cnt[(d.tier+4)//5] += 1
         elif verbose == 1:  # 브론즈5, 브론즈4, 브론즈3, ...
             NUM_TIER = 31
             cnt = [0] * NUM_TIER
@@ -246,9 +231,7 @@ class Utility:
         return cnt
 
     def getCountAllSolvedByTag(self):
-        # query = "SELECT tag.name, COUNT(DISTINCT solve.id) cnt FROM solve, problem, tag WHERE solve.id = problem.id AND solve.id = tag.id GROUP BY tag.name;"
-        # data = self.db.executeAll(query)
-        data = crud.read_count_solved_by_tag(self.session, "수학") # 수정 필요
+        data = crud.read_count_solved_by_tag(self.session, "수학")  # 수정 필요
         print(data)
         assert 0
         ret = dict()
@@ -257,57 +240,59 @@ class Utility:
         return ret
 
     def getCountSolvedByTag(self, tag):
-        # query = f'SELECT DISTINCT solve.id, tag.name FROM solve, problem, tag WHERE solve.id = problem.id AND solve.id = tag.id AND tag.name="{tag}";'
-        # data = self.db.executeAll(query)
-        # return [d["id"] for d in data]
         try:
             return self.getCountAllSolvedByTag()[tag]
         except KeyError:
             return 0
 
     def getAllExp(self):
-        query = "SELECT * FROM experience;"
-        data = self.db.executeAll(query)
-        NUM_TIER = 31
-        ret = [0]*NUM_TIER
-        for d in data:
-            ret[d['tier']] = d['exp']
-        return ret
+        pass
+        # query = "SELECT * FROM experience;"
+        # data = self.db.executeAll(query)
+        # NUM_TIER = 31
+        # ret = [0]*NUM_TIER
+        # for d in data:
+        #     ret[d['tier']] = d['exp']
+        # return ret
 
     def getStatusByLevel(self):
-        query = "SELECT COUNT(p.tier) cnt, e.name, e.tier FROM problem p, experience e WHERE p.tier = e.tier GROUP BY p.tier;"
-        all_count = self.db.executeAll(query)
+        all_count = crud.read_all_problem_count_by_tier(self.session)
+        solved_count = crud.read_problem_solved_count_by_tier(self.session)
+        all_count_dict = {}
+        solved_count_dict = {}
 
-        query = "SELECT COUNT(distinct solve.id) cnt, problem.tier FROM solve, problem WHERE solve.id = problem.id GROUP BY problem.tier;"
-        solved_count = self.db.executeAll(query)
+        for cnt, tier in all_count:
+            all_count_dict[tier] = cnt
+        for cnt, tier in solved_count:
+            solved_count_dict[tier] = cnt
 
         data = {}
-        for d in all_count:
-            data[d['tier']] = {'name': d['name'],
-                               'all_cnt': d['cnt'], 'solved_cnt': 0}
-        for d in solved_count:
-            data[d['tier']]['solved_cnt'] = d['cnt']
+        for cnt, tier in all_count:
+            data[tier] = {"all_cnt": all_count_dict[tier], "solved_cnt": 0}
+        for cnt, tier in solved_count:
+            data[tier]["solved_cnt"] = cnt
         return data
 
     def getStatusByTag(self):
-        query = "SELECT COUNT(t.name) cnt, t.name FROM problem p, tag t WHERE p.id = t.id GROUP BY t.name ORDER BY cnt DESC;"
-        all_count = self.db.executeAll(query)
+        all_count = crud.read_all_problem_count_by_tag(self.session)
+        solved_count = crud.read_problem_solved_count_by_tag(self.session)
+        all_count_dict = {}
+        solved_count_dict = {}
 
-        # query = "SELECT COUNT(distinct problem.id) cnt, tag.name FROM solve, problem, tag WHERE solve.id = problem.id AND problem.id = tag.id GROUP BY tag.name;"
-        query = "SELECT COUNT(distinct t.id) cnt, t.name FROM tag t, (SELECT id FROM solve GROUP BY id) p WHERE p.id = t.id GROUP BY t.name;"
-        solved_count = self.db.executeAll(query)
+        for cnt, tag in all_count:
+            all_count_dict[tag] = cnt
+        for cnt, tag in solved_count:
+            solved_count_dict[tag] = cnt
 
         data = {}
-        for d in all_count:
-            data[d['name']] = {'all_cnt': d['cnt'], 'solved_cnt': 0}
-        for d in solved_count:
-            data[d['name']]['solved_cnt'] = d['cnt']
+        for cnt, tag in all_count:
+            data[tag] = {"all_cnt": all_count_dict[tag], "solved_cnt": 0}
+        for cnt, tag in solved_count:
+            data[tag]["solved_cnt"] = cnt
         return data
 
     # 특정 티어 중에 해결 못한 문제들 반환
     def getUnsolvedByLevel(self, tier):
-        # query = f"SELECT * FROM problem WHERE is_solved = false AND tier={tier};"
-        # data = self.db.executeAll(query)
         data = crud.read_problem_unsolved_by_tier(self.session, tier)
         ret = []
         for problem in data:
@@ -318,8 +303,6 @@ class Utility:
     # 특정 태그 중에 해결 못한 문제들 반환
     def getUnsolvedByTag(self, name):
         data = crud.read_problem_unsolved_by_tag(self.session, name)
-        # query = f"SELECT * FROM problem, tag WHERE problem.id = tag.id AND problem.is_solved = false AND tag.name='{name}';"
-        # data = self.db.executeAll(query)
         ret = []
         for problem, tag in data:
             ret.append({"id": problem.id, "title": problem.title,
@@ -329,27 +312,27 @@ class Utility:
     # 해당 날짜가 포함된 월~일 중에 가장 많이 푼 사람 5명 리턴
     def getWeeklyBest(self):
         startDate, endDate = getWeekDate(datetime.datetime.now())
-
-        query = f"SELECT name, COUNT(id) cnt FROM solve WHERE solved_at >= '{startDate}' GROUP BY name ORDER BY cnt DESC;"
-        data = self.db.executeAll(query)[:10]
+        data = crud.read_user_after_date_order_by_num_solved(
+            self.session, startDate)
         return data
 
     # 기여가 가장 많은 사람 리턴 (수정 필요)
     def getContributeBest(self):
-        startDate, _ = getWeekDate(
-            datetime.datetime.now())
-        query = f"SELECT sub.name name, sum(sub.cnt) cnt FROM (SELECT name, COUNT(id) cnt, solved_at FROM solve GROUP BY id HAVING solved_at>='{startDate}') sub GROUP BY sub.name ORDER BY cnt DESC;"
-        data = self.db.executeAll(query)[:10]
-        ret = []
-        for d in data:
-            d['cnt'] = int(d['cnt'])
-            ret.append(d)
-        return ret
+        pass
+        # startDate, _ = getWeekDate(
+        #     datetime.datetime.now())
+        # query = f"SELECT sub.name name, sum(sub.cnt) cnt FROM (SELECT name, COUNT(id) cnt, solved_at FROM solve GROUP BY id HAVING solved_at>='{startDate}') sub GROUP BY sub.name ORDER BY cnt DESC;"
+        # data = self.db.executeAll(query)[:10]
+        # ret = []
+        # for d in data:
+        #     d['cnt'] = int(d['cnt'])
+        #     ret.append(d)
+        # return ret
 
 
 if __name__ == "__main__":
     models.Base.metadata.create_all(bind=engine)
-    utility = Utility(True)
+    utility = Utility(False)
     # data = utility.getWeeklyBest()
     # utility.getAllUser(194)
     # utility.getProblemInfo()
@@ -361,4 +344,12 @@ if __name__ == "__main__":
     # print(data)
     # print(crud.read_problem_unsolved_by_tag())
     # print(utility.getCountSolvedByTag("수학"))
-    utility.getAllSolved()
+    # data = utility.getProblemSolvedByLevel()
+    # print(data)
+
+    # utility.getProblemInfo()
+    # utility.updateSchoolUser()
+    # utility.updateAllUserSolved()
+
+    data = utility.getStatusByLevel()
+    print(data)

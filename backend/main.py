@@ -1,7 +1,11 @@
-from fastapi import FastAPI, status
+from fastapi import FastAPI, status, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from utility import Utility
+from database import SessionLocal, engine
+import schemas
+import crud
 import datetime
 
 app = FastAPI()
@@ -23,6 +27,13 @@ app.add_middleware(
 )
 
 
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
 # @app.get("/")
 # async def read_root():
 #     return {"Hello": "World"}
@@ -32,12 +43,8 @@ app.add_middleware(
 async def byLevel():
     now = datetime.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
     print(f">> Log ({now}) : /v1/level")
-    data = util.getCountSolvedByLevel()
-    ret = dict()
-    for i, v in enumerate(data):
-        ret[i] = v
-    util.db.commit()
-    return ret
+    data = util.getProblemSolvedByLevel()
+    return data
 
 
 @app.get("/v1/exp")
@@ -60,14 +67,10 @@ async def solvedByTag():
     d = {"수학": "math", "구현": "implementation", "그리디 알고리즘": "greedy", "문자열": "string", "자료 구조": "data_structures",
          "그래프 이론": "graphs", "다이나믹 프로그래밍": "dp", "기하학": "geometry"}
     ret = dict()
-    for tag in d.values():
-        ret[tag] = 0
-    for i in util.getAllSolved():
-        try:
-            ret[d[i['name']]] += 1
-        except Exception:
-            pass
-    util.db.commit()
+    for tag in d:
+        data = util.getProblemSolvedByTag(tag)
+        ret[d[tag]] = len(data)
+
     return ret
 
 
@@ -75,7 +78,6 @@ async def solvedByTag():
 async def statusByLevel():
     now = datetime.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
     print(f">> Log ({now}) : /v1/status/level")
-    util.db.commit()
     return util.getStatusByLevel()
 
 
@@ -83,7 +85,6 @@ async def statusByLevel():
 async def statusByTag():
     now = datetime.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
     print(f">> Log ({now}) : /v1/status/tag")
-    util.db.commit()
     return util.getStatusByTag()
 
 
@@ -91,7 +92,6 @@ async def statusByTag():
 async def unsolvedByLevel(level: int):
     now = datetime.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
     print(f">> Log ({now}) : /v1/unsolved/level")
-    util.db.commit()
     return util.getUnsolvedByLevel(level)
 
 
@@ -99,7 +99,6 @@ async def unsolvedByLevel(level: int):
 async def unsolvedByTag(name: str):
     now = datetime.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
     print(f">> Log ({now}) : /v1/unsolved/tag")
-    util.db.commit()
     return util.getUnsolvedByTag(name)
 
 
@@ -107,15 +106,15 @@ async def unsolvedByTag(name: str):
 async def weeklyBest():
     now = datetime.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
     print(f">> Log ({now}) : /v1/best/week")
-    util.db.commit()
-    return util.getWeeklyBest()
+    data = util.getWeeklyBest()
+    data = [{"cnt": d[0], "name":d[1]} for d in data]
+    return data
 
 
 @app.get("/v1/best/contrib")
 async def contribBest():
     now = datetime.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
     print(f">> Log ({now}) : /v1/best/contrib")
-    util.db.commit()
     return util.getContributeBest()
 
 

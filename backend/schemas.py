@@ -3,19 +3,6 @@ from typing import List, Union
 from pydantic import BaseModel
 
 
-class ExperienceBase(BaseModel):
-    tier: int
-    name: str
-    exp: int
-
-
-class ExperienceCreate(ExperienceBase):
-    pass
-
-
-class Experience(ExperienceBase):
-    class Config:
-        orm_mode = True
 
 
 class ProblemBase(BaseModel):
@@ -63,5 +50,14 @@ class SolveBase(BaseModel):
 
 
 class SolveCreate(SolveBase):
+    name: str
+    id: int
+
+
+class ContributionBase(BaseModel):
+    pass
+
+
+class ContributionCreate(ContributionBase):
     name: str
     id: int
