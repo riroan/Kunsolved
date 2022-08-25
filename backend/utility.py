@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-from database import Database, SessionLocal, engine
+from database import SessionLocal, engine
 from tqdm import tqdm
 
 import requests
@@ -347,9 +347,9 @@ if __name__ == "__main__":
     # data = utility.getProblemSolvedByLevel()
     # print(data)
 
-    # utility.getProblemInfo()
-    # utility.updateSchoolUser()
-    # utility.updateAllUserSolved()
+    utility.getProblemInfo()
+    utility.updateSchoolUser()
+    utility.updateAllUserSolved()
 
-    data = utility.getStatusByLevel()
-    print(data)
+    # data = utility.getStatusByLevel()
+    # print(data)
