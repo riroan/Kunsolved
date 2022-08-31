@@ -214,7 +214,7 @@ class Utility:
                                 f">> Warning : Problem {solve} solved by {user} is already existed")
                         continue
                     crud.create_solve(
-                        session, schemas.SolveCreate(name=user, id=solve))
+                        session, schemas.SolveCreateWithTime(name=user, id=solve, solved_at=datetime.datetime(1900, 1, 1, 0, 0, 0)))
                     crud.update_problem_is_solved(session, solve)
                     if self.debug_mode:
                         print(
@@ -353,6 +353,7 @@ if __name__ == "__main__":
     models.Base.metadata.create_all(bind=engine)
     utility = Utility(False)
 
-    utility.getProblemInfo()
-    utility.updateSchoolUser()
-    utility.updateAllUserSolved()
+    # utility.getProblemInfo()
+    # utility.updateSchoolUser()
+    # utility.updateAllUserSolved()
+    crud.create_solve(SessionLocal(), schemas.SolveCreateWithTime(id=9999, name="TESTDATA3", solved_at=datetime.datetime(1900, 1, 1, 0, 0, 0)))

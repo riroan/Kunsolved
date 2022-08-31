@@ -1,8 +1,5 @@
-from typing import List, Union
-
 from pydantic import BaseModel
-
-
+import datetime
 
 
 class ProblemBase(BaseModel):
@@ -46,12 +43,16 @@ class UserCreate(UserBase):
 
 
 class SolveBase(BaseModel):
-    pass
+    name: str
+    id: int
 
 
 class SolveCreate(SolveBase):
-    name: str
-    id: int
+    pass
+
+
+class SolveCreateWithTime(SolveBase):
+    solved_at: datetime.datetime
 
 
 class ContributionBase(BaseModel):
