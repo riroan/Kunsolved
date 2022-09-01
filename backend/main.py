@@ -3,9 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from utility import Utility
-from database import SessionLocal, engine
-import schemas
-import crud
+from database import SessionLocal
 import datetime
 
 app = FastAPI()
@@ -26,14 +24,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-def logging(message : str):
+
+def logging(message: str):
     now = datetime.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
     print(f">> Log ({now}) : {message}")
+
 
 def get_db():
     db = SessionLocal()
     try:
         yield db
+    except:
+        db.rollback()
     finally:
         db.close()
 
@@ -43,17 +45,17 @@ def get_db():
 
 
 @app.get("/v1/level")
-async def byLevel():
+async def byLevel(db: Session = Depends(get_db)):
     logging("/v1/level")
-    data = util.getProblemSolvedByLevel()
+    data = util.getProblemSolvedByLevel(db)
     return data
 
 
 @app.get("/v1/exp")
-async def byExp():
+async def byExp(db:Session = Depends(get_db)):
     logging("/v1/exp")
     data = util.getCountSolvedByLevel(1)
-    exp = util.getAllExp()
+    exp = util.getAllExp(db)
     ret = dict()
     for i, v in enumerate(zip(data, exp)):
         ret[i] = v[0]*v[1]
@@ -62,54 +64,54 @@ async def byExp():
 
 
 @app.get("/v1/tag")
-async def solvedByTag():
+async def solvedByTag(db: Session = Depends(get_db)):
     logging("/v1/tag")
     d = {"수학": "math", "구현": "implementation", "그리디 알고리즘": "greedy", "문자열": "string", "자료 구조": "data_structures",
          "그래프 이론": "graphs", "다이나믹 프로그래밍": "dp", "기하학": "geometry"}
     ret = dict()
     for tag in d:
-        data = util.getProblemSolvedByTag(tag)
+        data = util.getProblemSolvedByTag(tag, db)
         ret[d[tag]] = len(data)
 
     return ret
 
 
 @app.get("/v1/status/level")
-async def statusByLevel():
+async def statusByLevel(db: Session = Depends(get_db)):
     logging("/v1/status/level")
-    return util.getStatusByLevel()
+    return util.getStatusByLevel(db)
 
 
 @app.get("/v1/status/tag")
-async def statusByTag():
+async def statusByTag(db: Session = Depends(get_db)):
     logging("/v1/status/tag")
-    return util.getStatusByTag()
+    return util.getStatusByTag(db)
 
 
 @app.get("/v1/unsolved/level")
-async def unsolvedByLevel(level: int):
+async def unsolvedByLevel(level: int, db: Session = Depends(get_db)):
     logging("/v1/unsolved/level")
-    return util.getUnsolvedByLevel(level)
+    return util.getUnsolvedByLevel(level, db)
 
 
 @app.get("/v1/unsolved/tag")
-async def unsolvedByTag(name: str):
+async def unsolvedByTag(name: str, db: Session = Depends(get_db)):
     logging("/v1/unsolved/tag")
-    return util.getUnsolvedByTag(name)
+    return util.getUnsolvedByTag(name, db)
 
 
 @app.get("/v1/best/week")
-async def weeklyBest():
+async def weeklyBest(db: Session = Depends(get_db)):
     logging("/v1/best/week")
-    data = util.getWeeklyBest()
+    data = util.getWeeklyBest(db)
     data = [{"cnt": d[0], "name":d[1]} for d in data]
     return data
 
 
 @app.get("/v1/best/contrib")
-async def contribBest():
+async def contribBest(db: Session = Depends(get_db)):
     logging("/v1/best/contrib")
-    return util.getContributeBest()
+    return util.getContributeBest(db)
 
 
 class Issue(BaseModel):

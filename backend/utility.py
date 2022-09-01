@@ -221,26 +221,24 @@ class Utility:
                             f">> Log : Problem {solve} solved by {user} is appended")
 
     # 특정 학교 구성원이 해결한 모든 문제 반환
-    def getProblemSolvedByTag(self, tag):
-        with self.get_session() as session:
-            data = crud.read_problem_solved_by_tag(session, tag)
-            return data
+    def getProblemSolvedByTag(self, tag, session):
+        data = crud.read_problem_solved_by_tag(session, tag)
+        return data
 
     # 특정 학교 구성원이 해결한 모든 문제를 난이도별 개수로 반환
-    def getProblemSolvedByLevel(self, verbose=0):
+    def getProblemSolvedByLevel(self, session, verbose=0):
         cnt = [0]
-        with self.get_session() as session:
-            data = crud.read_all_problem_solved(session)
-            if verbose == 0:  # 브론즈, 실버, 골드...
-                NUM_TIER = 7
-                cnt = [0] * NUM_TIER
-                for d in data:
-                    cnt[(d.tier+4)//5] += 1
-            elif verbose == 1:  # 브론즈5, 브론즈4, 브론즈3, ...
-                NUM_TIER = 31
-                cnt = [0] * NUM_TIER
-                for d in data:
-                    cnt[d['tier']] += d['cnt']
+        data = crud.read_all_problem_solved(session)
+        if verbose == 0:  # 브론즈, 실버, 골드...
+            NUM_TIER = 7
+            cnt = [0] * NUM_TIER
+            for d in data:
+                cnt[(d.tier+4)//5] += 1
+        elif verbose == 1:  # 브론즈5, 브론즈4, 브론즈3, ...
+            NUM_TIER = 31
+            cnt = [0] * NUM_TIER
+            for d in data:
+                cnt[d['tier']] += d['cnt']
         return cnt
 
     def getCountAllSolvedByTag(self):
@@ -257,7 +255,7 @@ class Utility:
         except KeyError:
             return 0
 
-    def getAllExp(self):
+    def getAllExp(self, session):
         pass
         # query = "SELECT * FROM experience;"
         # data = self.db.executeAll(query)
@@ -267,76 +265,69 @@ class Utility:
         #     ret[d['tier']] = d['exp']
         # return ret
 
-    def getStatusByLevel(self):
+    def getStatusByLevel(self, session):
         data = {}
-        with self.get_session() as session:
-            all_count = crud.read_all_problem_count_by_tier(session)
-            solved_count = crud.read_problem_solved_count_by_tier(session)
-            all_count_dict = {}
-            solved_count_dict = {}
+        all_count = crud.read_all_problem_count_by_tier(session)
+        solved_count = crud.read_problem_solved_count_by_tier(session)
+        all_count_dict = {}
+        solved_count_dict = {}
 
-            for cnt, tier in all_count:
-                all_count_dict[tier] = cnt
-            for cnt, tier in solved_count:
-                solved_count_dict[tier] = cnt
+        for cnt, tier in all_count:
+            all_count_dict[tier] = cnt
+        for cnt, tier in solved_count:
+            solved_count_dict[tier] = cnt
 
-            
-            for cnt, tier in all_count:
-                data[tier] = {"all_cnt": all_count_dict[tier], "solved_cnt": 0}
-            for cnt, tier in solved_count:
-                data[tier]["solved_cnt"] = cnt
+        for cnt, tier in all_count:
+            data[tier] = {"all_cnt": all_count_dict[tier], "solved_cnt": 0}
+        for cnt, tier in solved_count:
+            data[tier]["solved_cnt"] = cnt
         return data
 
-    def getStatusByTag(self):
+    def getStatusByTag(self, session):
         data = {}
-        with self.get_session() as session:
-            all_count = crud.read_all_problem_count_by_tag(session)
-            solved_count = crud.read_problem_solved_count_by_tag(session)
-            all_count_dict = {}
-            solved_count_dict = {}
+        all_count = crud.read_all_problem_count_by_tag(session)
+        solved_count = crud.read_problem_solved_count_by_tag(session)
+        all_count_dict = {}
+        solved_count_dict = {}
 
-            for cnt, tag in all_count:
-                all_count_dict[tag] = cnt
-            for cnt, tag in solved_count:
-                solved_count_dict[tag] = cnt
+        for cnt, tag in all_count:
+            all_count_dict[tag] = cnt
+        for cnt, tag in solved_count:
+            solved_count_dict[tag] = cnt
 
-            
-            for cnt, tag in all_count:
-                data[tag] = {"all_cnt": all_count_dict[tag], "solved_cnt": 0}
-            for cnt, tag in solved_count:
-                data[tag]["solved_cnt"] = cnt
+        for cnt, tag in all_count:
+            data[tag] = {"all_cnt": all_count_dict[tag], "solved_cnt": 0}
+        for cnt, tag in solved_count:
+            data[tag]["solved_cnt"] = cnt
         return data
 
     # 특정 티어 중에 해결 못한 문제들 반환
-    def getUnsolvedByLevel(self, tier):
+    def getUnsolvedByLevel(self, tier, session):
         ret = []
-        with self.get_session() as session:
-            data = crud.read_problem_unsolved_by_tier(session, tier)
-            for problem in data:
-                ret.append({"id": problem.id, "title": problem.title,
+        data = crud.read_problem_unsolved_by_tier(session, tier)
+        for problem in data:
+            ret.append({"id": problem.id, "title": problem.title,
                         "tier": problem.tier, "num_solved": problem.num_solved})
         return ret
 
     # 특정 태그 중에 해결 못한 문제들 반환
-    def getUnsolvedByTag(self, name):
+    def getUnsolvedByTag(self, name, session):
         ret = []
-        with self.get_session() as session:
-            data = crud.read_problem_unsolved_by_tag(session, name)
-            for problem, tag in data:
-                ret.append({"id": problem.id, "title": problem.title,
+        data = crud.read_problem_unsolved_by_tag(session, name)
+        for problem, tag in data:
+            ret.append({"id": problem.id, "title": problem.title,
                         "tier": problem.tier, "num_solved": problem.num_solved})
         return ret
 
     # 해당 날짜가 포함된 월~일 중에 가장 많이 푼 사람 5명 리턴
-    def getWeeklyBest(self):
+    def getWeeklyBest(self, session):
         startDate, endDate = getWeekDate(datetime.datetime.now())
-        with self.get_session() as session:
-            data = crud.read_user_after_date_order_by_num_solved(
-                session, startDate)
-            return data
+        data = crud.read_user_after_date_order_by_num_solved(
+            session, startDate)
+        return data
 
     # 기여가 가장 많은 사람 리턴 (수정 필요)
-    def getContributeBest(self):
+    def getContributeBest(self, session):
         pass
         # startDate, _ = getWeekDate(
         #     datetime.datetime.now())
@@ -356,4 +347,5 @@ if __name__ == "__main__":
     # utility.getProblemInfo()
     # utility.updateSchoolUser()
     # utility.updateAllUserSolved()
-    crud.create_solve(SessionLocal(), schemas.SolveCreateWithTime(id=9999, name="TESTDATA3", solved_at=datetime.datetime(1900, 1, 1, 0, 0, 0)))
+    crud.create_solve(SessionLocal(), schemas.SolveCreateWithTime(
+        id=9999, name="TESTDATA3", solved_at=datetime.datetime(1900, 1, 1, 0, 0, 0)))
