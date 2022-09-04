@@ -12,17 +12,17 @@ import schemas
 import models
 
 
-def addDays(sourceDate, count):
+def add_day(sourceDate, count):
     targetDate = sourceDate + datetime.timedelta(days=count)
     return targetDate
 
 
-def getWeekDate(sourceDate):
+def get_week_date(sourceDate):
     temporaryDate = datetime.datetime(
         sourceDate.year, sourceDate.month, sourceDate.day)
     weekDayCount = temporaryDate.weekday()
-    startDate = addDays(temporaryDate, -weekDayCount)
-    endDate = addDays(startDate, 7)
+    startDate = add_day(temporaryDate, -weekDayCount)
+    endDate = add_day(startDate, 7)
     return str(startDate), str(endDate)
 
 
@@ -48,7 +48,7 @@ class Utility:
         print(f">> Log ({now}): {message}")
 
     # 특정 유저가 해결한 문제들 반환
-    def getUserInfo(self, user):
+    def get_user_info(self, user):
         url = f"https://acmicpc.net/user/{user}"
         time.sleep(10)
         response = requests.get(url, headers=self.headers)
@@ -62,7 +62,7 @@ class Utility:
             return []
 
     # 특정 학교 구성원의 아이디 반환
-    def getSchoolInfo(self, number, page=1):
+    def get_school_info(self, number, page=1):
         url = f"https://www.acmicpc.net/school/ranklist/{number}/{page}"
         response = requests.get(url, headers=self.headers)
         time.sleep(10)
@@ -75,8 +75,8 @@ class Utility:
             return []
 
     # 특정 학교 구성원이 최근에 해결한 문제 반환
-    def getRecentSolved(self, number=194):
-        self.log("getRecentSolved")
+    def get_recent_solved(self, number=194):
+        self.log("get_recent_solved")
         url = f"https://www.acmicpc.net/status?school_id={number}"
         response = requests.get(url, headers=self.headers)
         time.sleep(10)
@@ -105,9 +105,9 @@ class Utility:
         else:
             return [], []
 
-    def addRecentSolved(self, number=194):
-        self.log("addRecentSolved")
-        users, problems = self.getRecentSolved(number)
+    def add_recent_solved(self, number=194):
+        self.log("add_recent_solved")
+        users, problems = self.get_recent_solved(number)
         with self.get_session() as session:
             for user, problem_id in zip(users, problems):
                 data = crud.read_solve(session, problem_id, user)
@@ -116,8 +116,8 @@ class Utility:
                         name=user, id=problem_id))
 
     # 존재하는 모든 문제 아이디, 제목을 db에 추가 이미 있으면 태그, 티어 업데이트
-    def getProblemInfo(self):
-        self.log("getProblemInfo")
+    def get_problem_info(self):
+        self.log("get_problem_info")
         ix = 1
         with self.get_session() as session:
             while True:
@@ -174,11 +174,11 @@ class Utility:
                 ix += 1
 
     # 특정 학교에 존재하는 모든 유저 아이디 반환
-    def getAllUser(self, number):
+    def get_all_user(self, number):
         ix = 1
         users = []
         while True:
-            info = self.getSchoolInfo(number, ix)
+            info = self.get_school_info(number, ix)
             if len(info) == 0:
                 break
             users.extend(info)
@@ -186,9 +186,9 @@ class Utility:
         return users
 
     # 특정 학교에 존재하는 모든 유저 아이디 db에 추가
-    def updateSchoolUser(self, number=194):
-        self.log("updateSchoolUser")
-        users = self.getAllUser(number)
+    def update_school_user(self, number=194):
+        self.log("update_school_user")
+        users = self.get_all_user(number)
         with self.get_session() as session:
             for user in users:
                 try:
@@ -199,13 +199,13 @@ class Utility:
                         print(f">> Warning : User {user} is already existed")
 
     # 특정 학교에 존재하는 모든 유저의 해결한 문제 업데이트
-    def updateAllUserSolved(self):
-        self.log("updateAllUserSolved")
+    def update_all_user_solved(self):
+        self.log("update_all_user_solved")
         with self.get_session() as session:
             users = crud.read_all_user(session)
             users = [user.name for user in users]
             for user in tqdm(users):
-                solved = self.getUserInfo(user)
+                solved = self.get_user_info(user)
                 for solve in solved:
                     data = crud.read_solve(session, solve, user)
                     if data:
@@ -221,12 +221,12 @@ class Utility:
                             f">> Log : Problem {solve} solved by {user} is appended")
 
     # 특정 학교 구성원이 해결한 모든 문제 반환
-    def getProblemSolvedByTag(self, tag, session):
+    def get_problem_solved_by_tag(self, tag, session):
         data = crud.read_problem_solved_by_tag(session, tag)
         return data
 
     # 특정 학교 구성원이 해결한 모든 문제를 난이도별 개수로 반환
-    def getProblemSolvedByLevel(self, session, verbose=0):
+    def get_problem_solved_by_level(self, session, verbose=0):
         cnt = [0]
         data = crud.read_all_problem_solved(session)
         if verbose == 0:  # 브론즈, 실버, 골드...
@@ -241,7 +241,7 @@ class Utility:
                 cnt[d['tier']] += d['cnt']
         return cnt
 
-    def getCountAllSolvedByTag(self):
+    def get_count_all_solved_by_tag(self):
         ret = dict()
         with self.get_session() as session:
             data = crud.read_count_solved_by_tag(session, "수학")  # 수정 필요
@@ -249,13 +249,13 @@ class Utility:
                 ret[d['name']] = d['cnt']
         return ret
 
-    def getCountSolvedByTag(self, tag):
+    def get_count_solved_by_tag(self, tag):
         try:
-            return self.getCountAllSolvedByTag()[tag]
+            return self.get_count_all_solved_by_tag()[tag]
         except KeyError:
             return 0
 
-    def getAllExp(self, session):
+    def get_all_exp(self, session):
         pass
         # query = "SELECT * FROM experience;"
         # data = self.db.executeAll(query)
@@ -265,7 +265,7 @@ class Utility:
         #     ret[d['tier']] = d['exp']
         # return ret
 
-    def getStatusByLevel(self, session):
+    def get_status_by_level(self, session):
         data = {}
         all_count = crud.read_all_problem_count_by_tier(session)
         solved_count = crud.read_problem_solved_count_by_tier(session)
@@ -283,7 +283,7 @@ class Utility:
             data[tier]["solved_cnt"] = cnt
         return data
 
-    def getStatusByTag(self, session):
+    def get_status_by_tag(self, session):
         data = {}
         all_count = crud.read_all_problem_count_by_tag(session)
         solved_count = crud.read_problem_solved_count_by_tag(session)
@@ -302,7 +302,7 @@ class Utility:
         return data
 
     # 특정 티어 중에 해결 못한 문제들 반환
-    def getUnsolvedByLevel(self, tier, session):
+    def get_unsolved_by_level(self, tier, session):
         ret = []
         data = crud.read_problem_unsolved_by_tier(session, tier)
         for problem in data:
@@ -311,7 +311,7 @@ class Utility:
         return ret
 
     # 특정 태그 중에 해결 못한 문제들 반환
-    def getUnsolvedByTag(self, name, session):
+    def get_unsolved_by_tag(self, name, session):
         ret = []
         data = crud.read_problem_unsolved_by_tag(session, name)
         for problem, tag in data:
@@ -320,16 +320,16 @@ class Utility:
         return ret
 
     # 해당 날짜가 포함된 월~일 중에 가장 많이 푼 사람 5명 리턴
-    def getWeeklyBest(self, session):
-        startDate, endDate = getWeekDate(datetime.datetime.now())
+    def get_weekly_best(self, session):
+        startDate, endDate = get_week_date(datetime.datetime.now())
         data = crud.read_user_after_date_order_by_num_solved(
             session, startDate)
         return data
 
     # 기여가 가장 많은 사람 리턴 (수정 필요)
-    def getContributeBest(self, session):
+    def get_contribute_best(self, session):
         pass
-        # startDate, _ = getWeekDate(
+        # startDate, _ = get_week_date(
         #     datetime.datetime.now())
         # query = f"SELECT sub.name name, sum(sub.cnt) cnt FROM (SELECT name, COUNT(id) cnt, solved_at FROM solve GROUP BY id HAVING solved_at>='{startDate}') sub GROUP BY sub.name ORDER BY cnt DESC;"
         # data = self.db.executeAll(query)[:10]
@@ -344,8 +344,8 @@ if __name__ == "__main__":
     models.Base.metadata.create_all(bind=engine)
     utility = Utility(False)
 
-    # utility.getProblemInfo()
-    # utility.updateSchoolUser()
-    # utility.updateAllUserSolved()
+    # utility.get_problem_info()
+    # utility.update_school_user()
+    # utility.update_all_user_solved()
     crud.create_solve(SessionLocal(), schemas.SolveCreateWithTime(
         id=9999, name="TESTDATA3", solved_at=datetime.datetime(1900, 1, 1, 0, 0, 0)))

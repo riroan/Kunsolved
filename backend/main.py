@@ -47,14 +47,14 @@ def get_db():
 @app.get("/v1/level")
 async def byLevel(db: Session = Depends(get_db)):
     logging("/v1/level")
-    data = util.getProblemSolvedByLevel(db)
+    data = util.get_problem_solved_by_level(db)
     return data
 
 
 @app.get("/v1/exp")
 async def byExp(db:Session = Depends(get_db)):
     logging("/v1/exp")
-    data = util.getCountSolvedByLevel(1)
+    data = util.get_count_solved_by_level(1)
     exp = util.getAllExp(db)
     ret = dict()
     for i, v in enumerate(zip(data, exp)):
@@ -70,7 +70,7 @@ async def solvedByTag(db: Session = Depends(get_db)):
          "그래프 이론": "graphs", "다이나믹 프로그래밍": "dp", "기하학": "geometry"}
     ret = dict()
     for tag in d:
-        data = util.getProblemSolvedByTag(tag, db)
+        data = util.get_problem_solved_by_tag(tag, db)
         ret[d[tag]] = len(data)
 
     return ret
@@ -79,31 +79,31 @@ async def solvedByTag(db: Session = Depends(get_db)):
 @app.get("/v1/status/level")
 async def statusByLevel(db: Session = Depends(get_db)):
     logging("/v1/status/level")
-    return util.getStatusByLevel(db)
+    return util.get_status_by_level(db)
 
 
 @app.get("/v1/status/tag")
 async def statusByTag(db: Session = Depends(get_db)):
     logging("/v1/status/tag")
-    return util.getStatusByTag(db)
+    return util.get_status_by_tag(db)
 
 
 @app.get("/v1/unsolved/level")
 async def unsolvedByLevel(level: int, db: Session = Depends(get_db)):
     logging("/v1/unsolved/level")
-    return util.getUnsolvedByLevel(level, db)
+    return util.get_unsolved_by_level(level, db)
 
 
 @app.get("/v1/unsolved/tag")
 async def unsolvedByTag(name: str, db: Session = Depends(get_db)):
     logging("/v1/unsolved/tag")
-    return util.getUnsolvedByTag(name, db)
+    return util.get_unsolved_by_tag(name, db)
 
 
 @app.get("/v1/best/week")
 async def weeklyBest(db: Session = Depends(get_db)):
     logging("/v1/best/week")
-    data = util.getWeeklyBest(db)
+    data = util.get_weekly_best(db)
     data = [{"cnt": d[0], "name":d[1]} for d in data]
     return data
 
@@ -111,7 +111,7 @@ async def weeklyBest(db: Session = Depends(get_db)):
 @app.get("/v1/best/contrib")
 async def contribBest(db: Session = Depends(get_db)):
     logging("/v1/best/contrib")
-    return util.getContributeBest(db)
+    return util.get_contribute_best(db)
 
 
 class Issue(BaseModel):
