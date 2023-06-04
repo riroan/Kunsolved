@@ -1,7 +1,8 @@
 version: '3.8'
 services:
   kunsolved-backend:
-    build: .
+    build:
+      dockerfile: ./main.Dockerfile
     ports:
       - '8000:8000'
     depends_on:
@@ -12,6 +13,9 @@ services:
       - mysql-volume:/var/lib/mysql
     env_file:
       - ./mysql.env
+  scheduler:
+    build:
+      dockerfile: ./scheduler.Dockerfile
 
 volumes:
   mysql-volume:
