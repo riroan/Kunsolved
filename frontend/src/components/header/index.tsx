@@ -8,7 +8,7 @@ export default function Header() {
     return (
         <div className={cx('main')}>
             <Link to="/" className={cx('link')}>
-                <span className={cx('title')}>SchoolJoon</span>
+                <span className={cx('title')}>Kunsolved</span>
             </Link>
             <div className={cx('ext')}>
                 <ul className={cx('ul')}>
