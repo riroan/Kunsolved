@@ -19,6 +19,6 @@ jobs:
           key: ${{secrets.KEY}}
           port: ${{secrets.PORT}}
           script: |
-            cd ~/SchoolJoon/backend
+            cd ~/Kunsolved/backend
             git pull
             ./run.sh
