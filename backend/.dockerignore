@@ -1,0 +1,6 @@
+.dockerignore
+Dockerfile
+/venv
+/.pytest_cache
+/.ebextensions
+/__pycache__
