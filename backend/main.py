@@ -37,10 +37,6 @@ def get_db():
         db.commit()
         db.close()
 
-# @app.get("/")
-# async def read_root():
-#     return {"Hello": "World"}
-
 
 @app.get("/v1/level")
 async def byLevel(db: Session = Depends(get_db)):
