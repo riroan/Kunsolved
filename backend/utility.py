@@ -11,6 +11,8 @@ import crud
 import schemas
 import models
 
+import log
+
 
 def add_day(sourceDate, count):
     targetDate = sourceDate + datetime.timedelta(days=count)
@@ -43,10 +45,6 @@ class Utility:
         finally:
             self.session.close()
 
-    def log(self, message):
-        now = now = datetime.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
-        print(f">> Log ({now}): {message}")
-
     # 특정 유저가 해결한 문제들 반환
     def get_user_info(self, user):
         url = f"https://acmicpc.net/user/{user}"
@@ -76,7 +74,7 @@ class Utility:
 
     # 특정 학교 구성원이 최근에 해결한 문제 반환
     def get_recent_solved(self, number=194):
-        self.log("get_recent_solved")
+        log.info("get_recent_solved")
         url = f"https://www.acmicpc.net/status?school_id={number}"
         response = requests.get(url, headers=self.headers)
         time.sleep(10)
@@ -106,7 +104,7 @@ class Utility:
             return [], []
 
     def add_recent_solved(self, number=194):
-        self.log("add_recent_solved")
+        log.info("add_recent_solved")
         users, problems = self.get_recent_solved(number)
         with self.get_session() as session:
             for user, problem_id in zip(users, problems):
@@ -117,7 +115,7 @@ class Utility:
 
     # 존재하는 모든 문제 아이디, 제목을 db에 추가 이미 있으면 태그, 티어 업데이트
     def get_problem_info(self):
-        self.log("get_problem_info")
+        log.info("get_problem_info")
         ix = 1
         with self.get_session() as session:
             while True:
@@ -187,7 +185,7 @@ class Utility:
 
     # 특정 학교에 존재하는 모든 유저 아이디 db에 추가
     def update_school_user(self, number=194):
-        self.log("update_school_user")
+        log.info("update_school_user")
         users = self.get_all_user(number)
         with self.get_session() as session:
             for user in users:
@@ -200,7 +198,7 @@ class Utility:
 
     # 특정 학교에 존재하는 모든 유저의 해결한 문제 업데이트
     def update_all_user_solved(self):
-        self.log("update_all_user_solved")
+        log.info("update_all_user_solved")
         with self.get_session() as session:
             users = crud.read_all_user(session)
             users = [user.name for user in users]
