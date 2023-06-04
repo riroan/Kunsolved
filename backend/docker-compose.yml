@@ -1,12 +1,12 @@
 version: '3.8'
 services:
-  backend:
+  kunsolved_backend:
     build: .
     ports:
       - '8000:8000'
     depends_on:
       - db
-  db:
+  kunsolved_db:
     image: 'mysql'
     volumes:
       - mysql-volume:/var/lib/mysql
