@@ -116,7 +116,3 @@ def update_problem_is_solved(db: Session, id: int):
         data.is_solved = True
         db.commit()
         db.refresh(data)
-
-
-def delete_experience(db: Session, tier: int):
-    db.query(Experience).filter(Experience.tier == tier).delete()
