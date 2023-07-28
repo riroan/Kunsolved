@@ -1,9 +1,5 @@
 # Kunsolved
 
-## 오라클 클라우드에서 재배포
-
-## Schooljoon -> Kunsolved
-
 [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Friroan%2FSchoolJoon&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com) 
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/riroan/SchoolJoon.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/riroan/SchoolJoon/alerts/)
 [![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/riroan/SchoolJoon.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/riroan/SchoolJoon/context:javascript)
